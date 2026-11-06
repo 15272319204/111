@@ -1,0 +1,26 @@
+# 科大讯飞 STT 命令行工具 Makefile
+# 在虚拟机中运行: make -f Makefile.stt
+
+CC = gcc
+CFLAGS = -Wall -O2 -Isamples/iat_online_record_sample -Iinclude
+LDFLAGS = -Llibs/x64 -lmsc -lpthread -ldl -lm -lrt
+
+STT_TOOL = stt_tool
+
+SRCS = stt_tool.c \
+       samples/iat_online_record_sample/speech_recognizer.c \
+       linuxrec_stub.c
+
+all: $(STT_TOOL)
+
+$(STT_TOOL): $(SRCS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	@echo "========================================="
+	@echo "  编译完成: $(STT_TOOL)"
+	@echo "  测试: LD_LIBRARY_PATH=libs/x64 ./$(STT_TOOL) test.wav"
+	@echo "========================================="
+
+clean:
+	rm -f $(STT_TOOL)
+
+.PHONY: all clean
