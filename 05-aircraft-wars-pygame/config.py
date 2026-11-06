@@ -1,0 +1,4 @@
+# 全局配置常量
+BG_SIZE = (512, 768)
+CREATE_ENEMY_ID = 10
+GAME_OVER_ID = 11
