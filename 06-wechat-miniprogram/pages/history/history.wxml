@@ -1,0 +1,74 @@
+<view class="page-container">
+  <view class="history-header">
+    <view class="header-bg"></view>
+    <view class="header-content">
+      <text class="header-title">观影历史</text>
+      <text class="header-desc">共观看 {{historyList.length}} 部影片</text>
+    </view>
+  </view>
+
+  <view class="filter-bar">
+    <view class="filter-item" bindtap="filterByYear">
+      <text class="filter-text">{{selectedYear || '全部年份'}}</text>
+      <text class="filter-arrow">▼</text>
+    </view>
+    <view class="filter-divider"></view>
+    <view class="filter-item" bindtap="filterByMonth">
+      <text class="filter-text">{{selectedMonth || '全部月份'}}</text>
+      <text class="filter-arrow">▼</text>
+    </view>
+    <view class="clear-btn" bindtap="clearFilter">
+      <text>清除筛选</text>
+    </view>
+  </view>
+
+  <view class="history-list">
+    <view class="history-group" wx:for="{{groupedHistory}}" wx:key="date">
+      <view class="group-header">
+        <text class="group-date">{{item.date}}</text>
+        <text class="group-count">共{{item.movies.length}}部</text>
+      </view>
+      <view 
+        class="history-item" 
+        wx:for="{{item.movies}}" 
+        wx:key="id"
+        wx:for-item="movie"
+        bindtap="goToDetail"
+        data-movie-id="{{movie.id}}"
+      >
+        <view class="movie-poster">
+          <image src="{{movie.poster}}" mode="aspectFill" />
+        </view>
+        <view class="movie-info">
+          <text class="movie-title">{{movie.title}}</text>
+          <text class="movie-type">{{movie.type}}</text>
+          <view class="movie-meta">
+            <text class="movie-time">{{movie.watchTime}}</text>
+            <text class="movie-rating">⭐ {{movie.rating}}</text>
+          </view>
+        </view>
+        <view class="movie-action">
+          <text class="action-icon">↻</text>
+          <text class="action-text">再看一次</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:if="{{historyList.length === 0}}">
+    <view class="empty-icon">🎬</view>
+    <text class="empty-text">暂无观影记录</text>
+    <text class="empty-desc">快去影院观影吧</text>
+    <view class="go-btn" bindtap="goToHome">
+      <text>去首页看看</text>
+    </view>
+  </view>
+
+  <view class="bottom-action" wx:if="{{historyList.length > 0}}">
+    <view class="clear-btn" bindtap="clearHistory">
+      <text>🗑️ 清空观影历史</text>
+    </view>
+  </view>
+
+  <CustomTabBar />
+</view>

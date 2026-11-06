@@ -1,0 +1,142 @@
+<view class="container" wx:if="{{movie}}">
+  <view class="poster-section">
+    <image class="poster" src="{{movie.poster}}" mode="aspectFill" />
+    <view class="poster-overlay">
+      <view class="back-btn" bindtap="goBack">
+        <view class="back-icon"></view>
+      </view>
+      <view class="movie-info-overlay">
+        <text class="movie-title">{{movie.title}}</text>
+        <view class="movie-meta-overlay">
+          <text class="movie-type">{{movie.type}}</text>
+          <view class="rating-badge-detail">
+            <view class="star-icon-detail"></view>
+            <text class="rating-text-detail">{{movie.rating}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="play-btn" bindtap="playTrailer">
+        <view class="play-icon"></view>
+        <text class="play-text">预告</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="content-section">
+    <view class="stats-row">
+      <view class="stat-item">
+        <text class="stat-value">{{movie.rating}}</text>
+        <text class="stat-label">评分</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value">{{movie.duration}}</text>
+        <text class="stat-label">时长</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value">{{movie.showTimes.length}}</text>
+        <text class="stat-label">场次</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value">{{movie.releaseDate}}</text>
+        <text class="stat-label">上映</text>
+      </view>
+    </view>
+
+    <view class="info-card">
+      <view class="info-header">
+        <view class="info-icon director-icon"></view>
+        <text class="info-title">导演</text>
+      </view>
+      <text class="info-content">{{movie.director}}</text>
+    </view>
+
+    <view class="info-card">
+      <view class="info-header">
+        <view class="info-icon cast-icon"></view>
+        <text class="info-title">主演</text>
+      </view>
+      <text class="info-content">{{movie.cast}}</text>
+    </view>
+
+    <view class="info-card">
+      <view class="info-header">
+        <view class="info-icon desc-icon"></view>
+        <text class="info-title">影片简介</text>
+      </view>
+      <text class="info-content description">{{movie.description}}</text>
+    </view>
+
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">🎬 今日放映场次</text>
+        <text class="section-subtitle">点击选择场次购票</text>
+      </view>
+      <view class="time-grid">
+        <view 
+          class="time-item {{selectedTime === item ? 'selected' : ''}}" 
+          wx:for="{{movie.showTimes}}" 
+          wx:key="*this"
+          bindtap="selectTime"
+          data-time="{{item}}"
+        >
+          <text class="time-text">{{item}}</text>
+          <text class="time-price">¥30</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-header">
+        <text class="section-title">🍿 推荐套餐</text>
+      </view>
+      <view class="combo-list">
+        <view class="combo-item {{selectedCombo === item.id ? 'selected' : ''}}" wx:for="{{combos}}" wx:key="id" bindtap="selectCombo" data-id="{{item.id}}">
+          <view class="combo-icon-wrapper">
+            <view class="combo-icon">{{item.icon}}</view>
+          </view>
+          <view class="combo-info">
+            <text class="combo-name">{{item.name}}</text>
+            <text class="combo-desc">{{item.desc}}</text>
+          </view>
+          <view class="combo-price">
+            <text class="combo-original">¥{{item.originalPrice}}</text>
+            <text class="combo-current">¥{{item.price}}</text>
+          </view>
+          <view class="combo-check {{selectedCombo === item.id ? 'active' : ''}}">
+            <view class="check-inner"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="bottom-space"></view>
+  </view>
+
+  <view class="bottom-bar">
+      <view class="bottom-left">
+        <view class="favorite-btn" bindtap="toggleFavorite">
+          <view class="favorite-icon {{isFavorite ? 'active' : ''}}"></view>
+          <text class="favorite-text">{{isFavorite ? '已收藏' : '收藏'}}</text>
+        </view>
+        <view class="share-btn" bindtap="shareMovie">
+          <view class="share-icon"></view>
+          <text class="share-text">分享</text>
+        </view>
+      </view>
+      <view class="buy-btn" bindtap="goToBuy">
+        <view class="buy-price-wrapper">
+          <text class="buy-label">合计</text>
+          <text class="buy-price">¥{{totalPrice}}</text>
+        </view>
+        <text class="buy-text">立即购票</text>
+      </view>
+    </view>
+</view>
+
+<view class="loading" wx:else>
+  <view class="loading-spinner"></view>
+  <text class="loading-text">加载中...</text>
+</view>

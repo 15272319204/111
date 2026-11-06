@@ -1,0 +1,190 @@
+.custom-tabbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 110rpx;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  box-shadow: 0 -2rpx 20rpx rgba(0, 0, 0, 0.1);
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 999;
+}
+
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.icon-wrapper {
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6rpx;
+}
+
+.tab-text {
+  font-size: 22rpx;
+  color: #999999;
+  transition: color 0.3s;
+}
+
+.tab-text.active {
+  color: #e53935;
+}
+
+/* 首页图标 */
+.home-icon {
+  width: 40rpx;
+  height: 40rpx;
+  position: relative;
+}
+
+.home-icon .roof {
+  width: 0;
+  height: 0;
+  border-left: 20rpx solid transparent;
+  border-right: 20rpx solid transparent;
+  border-bottom: 18rpx solid #999999;
+  transition: border-color 0.3s;
+}
+
+.tab-item.active .home-icon .roof {
+  border-bottom-color: #e53935;
+}
+
+.home-icon .house {
+  width: 36rpx;
+  height: 24rpx;
+  background: #999999;
+  border-radius: 4rpx;
+  margin-top: -4rpx;
+  margin-left: 2rpx;
+  transition: background-color 0.3s;
+}
+
+.tab-item.active .home-icon .house {
+  background-color: #e53935;
+}
+
+/* 收藏图标 */
+.heart-icon {
+  width: 40rpx;
+  height: 40rpx;
+  position: relative;
+}
+
+.heart-icon .heart {
+  position: relative;
+  width: 20rpx;
+  height: 20rpx;
+}
+
+.heart-left, .heart-right {
+  position: absolute;
+  width: 20rpx;
+  height: 20rpx;
+  background: #999999;
+  border-radius: 50% 50% 0 0;
+  transition: background-color 0.3s;
+}
+
+.heart-left {
+  transform: rotate(-45deg);
+  left: 0;
+}
+
+.heart-right {
+  transform: rotate(45deg);
+  right: 0;
+}
+
+.tab-item.active .heart-left,
+.tab-item.active .heart-right {
+  background-color: #e53935;
+}
+
+/* 购票图标 */
+.ticket-icon {
+  width: 40rpx;
+  height: 40rpx;
+  position: relative;
+}
+
+.ticket-body {
+  width: 40rpx;
+  height: 28rpx;
+  background: #999999;
+  border-radius: 4rpx;
+  position: relative;
+  transition: background-color 0.3s;
+}
+
+.tab-item.active .ticket-body {
+  background-color: #e53935;
+}
+
+.ticket-stub {
+  position: absolute;
+  right: -8rpx;
+  top: 0;
+  width: 16rpx;
+  height: 28rpx;
+  background: #999999;
+  border-radius: 0 8rpx 8rpx 0;
+  transition: background-color 0.3s;
+}
+
+.tab-item.active .ticket-stub {
+  background-color: #e53935;
+}
+
+.ticket-line {
+  position: absolute;
+  right: 0;
+  top: 4rpx;
+  width: 4rpx;
+  height: 20rpx;
+  background: #ffffff;
+}
+
+/* 用户图标 */
+.user-icon {
+  width: 40rpx;
+  height: 40rpx;
+  position: relative;
+}
+
+.user-icon .head {
+  width: 24rpx;
+  height: 24rpx;
+  background: #999999;
+  border-radius: 50%;
+  margin: 0 auto;
+  transition: background-color 0.3s;
+}
+
+.tab-item.active .user-icon .head {
+  background-color: #e53935;
+}
+
+.user-icon .body {
+  width: 32rpx;
+  height: 20rpx;
+  background: #999999;
+  border-radius: 16rpx 16rpx 0 0;
+  margin: -4rpx auto 0;
+  transition: background-color 0.3s;
+}
+
+.tab-item.active .user-icon .body {
+  background-color: #e53935;
+}

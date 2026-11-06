@@ -1,0 +1,50 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/favorites/favorites",
+    "pages/tickets/tickets",
+    "pages/profile/profile",
+    "pages/admin/admin",
+    "pages/coupons/coupons",
+    "pages/history/history",
+    "pages/settings/settings",
+    "pages/detail/detail",
+    "pages/confirm/confirm"
+  ],
+  "window": {
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#e53935",
+    "navigationBarTitleText": "校园影院",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#f5f5f5"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json",
+  "tabBar": {
+    "custom": true,
+    "color": "#999999",
+    "selectedColor": "#e53935",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页"
+      },
+      {
+        "pagePath": "pages/favorites/favorites",
+        "text": "收藏"
+      },
+      {
+        "pagePath": "pages/tickets/tickets",
+        "text": "购票"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的"
+      }
+    ]
+  },
+  "usingComponents": {
+    "CustomTabBar": "/components/CustomTabBar/CustomTabBar"
+  }
+}

@@ -1,0 +1,43 @@
+<view class="tickets-page">
+  <view class="page-header">
+    <text class="header-title">我的票券</text>
+    <text class="header-subtitle">查看和管理您的购票记录</text>
+  </view>
+
+  <view class="ticket-container">
+    <view wx:if="{{ticketList.length > 0}}" class="ticket-list">
+      <view wx:for="{{ticketList}}" wx:key="id" class="ticket-card">
+        <image class="ticket-poster" src="{{item.poster}}" mode="aspectFill" lazy-load />
+        <view class="ticket-content">
+          <text class="movie-title">{{item.movieTitle}}</text>
+          <text class="movie-type">{{item.movieType}}</text>
+          <view class="ticket-details">
+            <text class="detail-item">⏰ {{item.showTime}}</text>
+            <text class="detail-item">💺 {{item.seat}}</text>
+            <text class="detail-item">💰 ¥{{item.price}}</text>
+          </view>
+          <view class="ticket-footer">
+            <view class="ticket-tag {{item.status === 'used' ? 'used' : 'unused'}}">
+              <text>{{item.status === 'used' ? '已使用' : '未使用'}}</text>
+            </view>
+            <view class="ticket-action" wx:if="{{item.status === 'unused'}}">
+              <view class="use-btn" bindtap="useTicket" data-id="{{item.id}}">
+                <text>核销</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="empty-state">
+      <view class="empty-icon">🎫</view>
+      <text class="empty-title">暂无购票记录</text>
+      <text class="empty-desc">快去首页看看有什么精彩影片吧</text>
+      <view class="empty-button" bindtap="goToHome">
+        <text>立即购票</text>
+      </view>
+    </view>
+  </view>
+  <CustomTabBar />
+</view>

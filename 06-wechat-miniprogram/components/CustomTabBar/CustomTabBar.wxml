@@ -1,0 +1,41 @@
+<view class="custom-tabbar">
+  <view 
+    wx:for="{{tabList}}" 
+    wx:key="index"
+    class="tab-item {{selectedIndex === index ? 'active' : ''}}"
+    data-path="{{item.pagePath}}"
+    bindtap="switchTab"
+    >
+    <view class="icon-wrapper">
+      <view class="icon home" wx:if="{{item.text === '首页'}}">
+        <view class="home-icon">
+          <view class="roof"></view>
+          <view class="house"></view>
+        </view>
+      </view>
+      <view class="icon fav" wx:if="{{item.text === '收藏'}}">
+        <view class="heart-icon">
+          <view class="heart" style="transform: rotate(-45deg);">
+            <view class="heart-left"></view>
+            <view class="heart-right"></view>
+          </view>
+        </view>
+      </view>
+      <view class="icon ticket" wx:if="{{item.text === '购票'}}">
+        <view class="ticket-icon">
+          <view class="ticket-body">
+            <view class="ticket-stub"></view>
+            <view class="ticket-line"></view>
+          </view>
+        </view>
+      </view>
+      <view class="icon user" wx:if="{{item.text === '我的'}}">
+        <view class="user-icon">
+          <view class="head"></view>
+          <view class="body"></view>
+        </view>
+      </view>
+    </view>
+    <text class="tab-text {{selectedIndex === index ? 'active' : ''}}">{{item.text}}</text>
+  </view>
+</view>

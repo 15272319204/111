@@ -1,0 +1,23 @@
+<view class="tab-bar">
+  <view 
+    class="tab-item {{currentIndex === 0 ? 'active' : ''}}" 
+    bindtap="switchTab" 
+    data-index="0"
+  >
+    <view class="tab-icon home-icon"></view>
+    <text class="tab-text">首页</text>
+  </view>
+  <view class="tab-center">
+    <view class="tab-center-btn" bindtap="goToSearch">
+      <view class="search-icon"></view>
+    </view>
+  </view>
+  <view 
+    class="tab-item {{currentIndex === 1 ? 'active' : ''}}" 
+    bindtap="switchTab" 
+    data-index="1"
+  >
+    <view class="tab-icon fav-icon"></view>
+    <text class="tab-text">收藏</text>
+  </view>
+</view>

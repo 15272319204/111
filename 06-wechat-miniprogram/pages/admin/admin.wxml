@@ -1,0 +1,128 @@
+<view class="page-container">
+  <!-- 顶部导航 -->
+  <view class="admin-header">
+    <view class="header-content">
+      <view class="admin-info">
+        <view class="admin-avatar">👤</view>
+        <view class="admin-text">
+          <text class="admin-name">管理员后台</text>
+          <text class="admin-desc">欢迎回来，管理员</text>
+        </view>
+      </view>
+      <view class="logout-btn" bindtap="logout">
+        <text>退出登录</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计概览 -->
+  <view class="stats-section">
+    <view class="stats-card">
+      <view class="stat-item">
+        <view class="stat-icon">🎬</view>
+        <view class="stat-info">
+          <text class="stat-value">{{stats.movies}}</text>
+          <text class="stat-label">影片数量</text>
+        </view>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <view class="stat-icon">🎟️</view>
+        <view class="stat-info">
+          <text class="stat-value">{{stats.tickets}}</text>
+          <text class="stat-label">售票总数</text>
+        </view>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <view class="stat-icon">👥</view>
+        <view class="stat-info">
+          <text class="stat-value">{{stats.users}}</text>
+          <text class="stat-label">用户数量</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="menu-section">
+    <text class="section-title">管理功能</text>
+    <view class="menu-grid">
+      <view class="menu-card" bindtap="goToMovieManagement">
+        <view class="menu-icon-wrapper movie">
+          <text class="menu-icon">🎬</text>
+        </view>
+        <text class="menu-name">影片管理</text>
+        <text class="menu-desc">添加/编辑影片</text>
+      </view>
+      <view class="menu-card" bindtap="goToOrderManagement">
+        <view class="menu-icon-wrapper order">
+          <text class="menu-icon">📋</text>
+        </view>
+        <text class="menu-name">订单管理</text>
+        <text class="menu-desc">查看所有订单</text>
+      </view>
+      <view class="menu-card" bindtap="goToUserManagement">
+        <view class="menu-icon-wrapper user">
+          <text class="menu-icon">👥</text>
+        </view>
+        <text class="menu-name">用户管理</text>
+        <text class="menu-desc">管理用户账号</text>
+      </view>
+      <view class="menu-card" bindtap="goToDataStatistics">
+        <view class="menu-icon-wrapper stats">
+          <text class="menu-icon">📊</text>
+        </view>
+        <text class="menu-name">数据统计</text>
+        <text class="menu-desc">票房数据分析</text>
+      </view>
+      <view class="menu-card" bindtap="goToCouponManagement">
+        <view class="menu-icon-wrapper coupon">
+          <text class="menu-icon">🎫</text>
+        </view>
+        <text class="menu-name">优惠券管理</text>
+        <text class="menu-desc">发放优惠活动</text>
+      </view>
+      <view class="menu-card" bindtap="goToSystemSettings">
+        <view class="menu-icon-wrapper settings">
+          <text class="menu-icon">⚙️</text>
+        </view>
+        <text class="menu-name">系统设置</text>
+        <text class="menu-desc">配置系统参数</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最近订单 -->
+  <view class="recent-section">
+    <view class="section-header">
+      <text class="section-title">最近订单</text>
+      <text class="view-all" bindtap="goToOrderManagement">查看全部</text>
+    </view>
+    <view class="order-list">
+      <view class="order-item" wx:for="{{recentOrders}}" wx:key="id">
+        <view class="order-poster">
+          <image src="{{item.poster}}" mode="aspectFill" />
+        </view>
+        <view class="order-info">
+          <text class="order-movie">{{item.movieTitle}}</text>
+          <text class="order-time">{{item.showTime}}</text>
+          <view class="order-meta">
+            <text class="order-seat">{{item.seat}}</text>
+            <text class="order-price">¥{{item.price}}</text>
+          </view>
+        </view>
+        <view class="order-status" :class="item.status">
+          {{item.status === 'unused' ? '待使用' : '已使用'}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部返回按钮 -->
+  <view class="bottom-action">
+    <view class="back-btn" bindtap="goBack">
+      <text>← 返回个人中心</text>
+    </view>
+  </view>
+</view>

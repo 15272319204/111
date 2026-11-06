@@ -1,0 +1,79 @@
+<view class="page-container">
+  <view class="coupon-header">
+    <view class="header-bg"></view>
+    <view class="header-content">
+      <text class="header-title">我的优惠券</text>
+      <text class="header-desc">共 {{coupons.length}} 张可用</text>
+    </view>
+  </view>
+
+  <view class="coupon-tabs">
+    <view 
+      class="tab {{activeTab === 'all' ? 'active' : ''}}"
+      bindtap="setTab"
+      data-tab="all"
+    >
+      全部
+    </view>
+    <view 
+      class="tab {{activeTab === 'usable' ? 'active' : ''}}"
+      bindtap="setTab"
+      data-tab="usable"
+    >
+      可使用
+    </view>
+    <view 
+      class="tab {{activeTab === 'used' ? 'active' : ''}}"
+      bindtap="setTab"
+      data-tab="used"
+    >
+      已使用
+    </view>
+    <view 
+      class="tab {{activeTab === 'expired' ? 'active' : ''}}"
+      bindtap="setTab"
+      data-tab="expired"
+    >
+      已过期
+    </view>
+  </view>
+
+  <view class="coupon-list">
+    <view 
+      class="coupon-card" 
+      wx:for="{{filteredCoupons}}" 
+      wx:key="id"
+      :class="item.status"
+    >
+      <view class="coupon-left">
+        <view class="coupon-value">
+          <text class="value-symbol">¥</text>
+          <text class="value-number">{{item.value}}</text>
+        </view>
+        <text class="coupon-condition">{{item.condition}}</text>
+      </view>
+      <view class="coupon-right">
+        <text class="coupon-name">{{item.name}}</text>
+        <text class="coupon-desc">{{item.description}}</text>
+        <text class="coupon-expire">有效期至 {{item.expireDate}}</text>
+      </view>
+      <view class="coupon-status-tag" v-if="item.status !== 'usable'">
+        {{item.status === 'used' ? '已使用' : '已过期'}}
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:if="{{filteredCoupons.length === 0}}">
+    <view class="empty-icon">🎫</view>
+    <text class="empty-text">暂无优惠券</text>
+    <text class="empty-desc">快去领取优惠券吧</text>
+  </view>
+
+  <view class="bottom-action">
+    <view class="get-btn" bindtap="getCoupons">
+      <text>🎁 去领取优惠券</text>
+    </view>
+  </view>
+
+  <CustomTabBar />
+</view>

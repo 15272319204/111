@@ -1,0 +1,135 @@
+<view class="confirm-container">
+  <view class="confirm-header">
+    <view class="back-btn" bindtap="goBack">
+      <view class="back-arrow"></view>
+    </view>
+    <text class="header-title">确认购票</text>
+    <view class="header-right"></view>
+  </view>
+
+  <scroll-view class="confirm-content" scroll-y>
+    <view class="movie-card">
+      <image class="movie-poster" src="{{movie.poster}}" mode="aspectFill" />
+      <view class="movie-info">
+        <text class="movie-title">{{movie.title}}</text>
+        <text class="movie-type">{{movie.type}}</text>
+        <view class="movie-meta">
+          <view class="star-wrapper">
+            <view class="star-icon"></view>
+            <text class="rating">{{movie.rating}}</text>
+          </view>
+          <text class="duration">{{movie.duration}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-card">
+      <view class="section-header">
+        <view class="section-icon">🎬</view>
+        <text class="section-title">选择场次</text>
+      </view>
+      <view class="time-slots">
+        <view wx:for="{{movie.showTimes}}" wx:key="*this" bindtap="selectTime" data-time="{{item}}" class="time-slot {{selectedTime === item ? 'active' : ''}}">
+          <text class="time-text">{{item}}</text>
+          <text class="time-status">有票</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-card">
+      <view class="section-header">
+        <view class="section-icon">💺</view>
+        <text class="section-title">选择座位</text>
+        <text class="section-tip">{{selectedSeatsText}}</text>
+      </view>
+      <view class="seat-area">
+        <view class="screen">
+          <text class="screen-text">银幕</text>
+        </view>
+        <view class="seat-grid">
+          <view wx:for="{{seats}}" wx:key="index" wx:for-item="rowSeats" class="seat-row">
+            <view wx:for="{{rowSeats}}" wx:key="index" wx:for-item="seatItem" bindtap="selectSeat" data-row="{{seatItem.row}}" data-col="{{seatItem.col}}" class="seat {{seatItem.status === 'sold' ? 'sold' : (seatItem.selected ? 'selected' : 'available')}}">
+              <text class="seat-number">{{seatItem.row}}{{seatItem.col}}</text>
+            </view>
+          </view>
+        </view>
+        <view class="seat-legend">
+          <view class="legend-item">
+            <view class="legend-seat available"></view>
+            <text>可选</text>
+          </view>
+          <view class="legend-item">
+            <view class="legend-seat selected"></view>
+            <text>已选</text>
+          </view>
+          <view class="legend-item">
+            <view class="legend-seat sold"></view>
+            <text>已售</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section-card">
+      <view class="section-header">
+        <view class="section-icon">🍿</view>
+        <text class="section-title">选择套餐</text>
+      </view>
+      <view class="combo-list">
+        <view wx:for="{{combos}}" wx:key="id" bindtap="selectCombo" data-combo="{{item}}" class="combo-item {{selectedCombo && selectedCombo.id === item.id ? 'selected' : ''}}">
+          <view class="combo-icon-wrapper">
+            <view class="combo-icon">{{item.icon}}</view>
+          </view>
+          <view class="combo-info">
+            <text class="combo-name">{{item.name}}</text>
+            <text class="combo-desc">{{item.desc}}</text>
+          </view>
+          <view class="combo-price">
+            <text class="original-price">¥{{item.originalPrice}}</text>
+            <text class="price">¥{{item.price}}</text>
+          </view>
+          <view class="combo-check {{selectedCombo && selectedCombo.id === item.id ? 'active' : ''}}">
+            <view class="check-inner"></view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="order-summary">
+      <view class="summary-header">
+        <text class="summary-title">订单详情</text>
+      </view>
+      <view class="summary-row">
+        <text class="summary-label">影片</text>
+        <text class="summary-value">{{movie.title}}</text>
+      </view>
+      <view class="summary-row">
+        <text class="summary-label">场次</text>
+        <text class="summary-value">{{selectedTimeText}}</text>
+      </view>
+      <view class="summary-row">
+        <text class="summary-label">座位</text>
+        <text class="summary-value">{{selectedSeatsText}}</text>
+      </view>
+      <view class="summary-row" wx:if="{{selectedComboName}}">
+        <text class="summary-label">套餐</text>
+        <text class="summary-value">{{selectedComboName}} ¥{{selectedComboPrice}}</text>
+      </view>
+      <view class="summary-divider"></view>
+      <view class="summary-total">
+        <text class="total-label">合计</text>
+        <text class="total-price">¥{{totalPrice}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="confirm-footer">
+    <view class="footer-left">
+      <text class="footer-price">¥{{totalPrice}}</text>
+      <text class="footer-desc">共{{selectedSeatsCount}}张票</text>
+    </view>
+    <view class="submit-btn" bindtap="submitOrder">
+      <text>确认购票</text>
+    </view>
+  </view>
+</view>

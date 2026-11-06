@@ -1,0 +1,65 @@
+<view class="container">
+  <view class="header">
+    <view class="header-content">
+      <view class="header-icon">
+        <view class="heart-icon"></view>
+      </view>
+      <view class="header-text">
+        <text class="title">我的收藏</text>
+        <text class="subtitle">共{{favorites.length}}部影片</text>
+      </view>
+      <view class="header-action" bindtap="clearAll" wx:if="{{favorites.length > 0}}">
+        <text class="action-text">清空</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="favorite-list" wx:if="{{favorites.length > 0}}">
+    <view 
+      class="favorite-card" 
+      wx:for="{{favorites}}" 
+      wx:key="id"
+      bindtap="goToDetail"
+      data-id="{{item.id}}"
+    >
+      <view class="card-poster">
+        <image class="poster" src="{{item.poster}}" mode="aspectFill" lazy-load />
+        <view class="poster-rating">
+          <view class="star-icon"></view>
+          <text class="rating-num">{{item.rating}}</text>
+        </view>
+      </view>
+      <view class="card-info">
+        <text class="movie-title">{{item.title}}</text>
+        <text class="movie-type">{{item.type}}</text>
+        <view class="movie-meta">
+          <text class="meta-item">导演：{{item.director}}</text>
+          <text class="meta-item">主演：{{item.cast}}</text>
+        </view>
+        <view class="show-times">
+          <text class="show-time-label">今日场次：{{item.showTimes.length}}场</text>
+        </view>
+      </view>
+      <view class="card-action">
+        <view class="remove-btn" bindtap="removeFavorite" data-id="{{item.id}}">
+          <view class="remove-icon"></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="empty-state" wx:else>
+    <view class="empty-icon">
+      <view class="empty-heart"></view>
+    </view>
+    <text class="empty-text">暂无收藏影片</text>
+    <text class="empty-hint">去首页看看有什么精彩影片吧</text>
+    <view class="go-home-btn" bindtap="goToHome">
+      <view class="btn-icon"></view>
+      <text class="go-home-text">去首页看看</text>
+    </view>
+  </view>
+
+  <view class="bottom-space"></view>
+  <CustomTabBar />
+</view>

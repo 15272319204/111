@@ -1,0 +1,175 @@
+<view class="container">
+  <view class="header">
+    <view class="header-content">
+      <view class="logo">
+        <view class="logo-icon"></view>
+      </view>
+      <view class="header-text">
+        <text class="title">校园影院</text>
+        <text class="subtitle">今日热映</text>
+      </view>
+      <view class="header-right">
+        <view class="notification-icon" bindtap="goToNotification"></view>
+      </view>
+    </view>
+  </view>
+
+  <view class="banner-section">
+    <swiper class="banner-swiper" indicator-dots circular autoplay interval="4000" duration="500">
+      <swiper-item wx:for="{{banners}}" wx:key="id">
+        <image class="banner-image" src="{{item.image}}" mode="aspectFill" />
+        <view class="banner-overlay">
+          <text class="banner-title">{{item.title}}</text>
+          <text class="banner-desc">{{item.desc}}</text>
+        </view>
+      </swiper-item>
+    </swiper>
+  </view>
+
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">🔥 热映影片</text>
+      <view class="section-more" bindtap="seeMoreHot">
+        <text class="more-text">更多</text>
+        <view class="more-arrow"></view>
+      </view>
+    </view>
+    <scroll-view class="movie-scroll" scroll-x enhanced show-scrollbar="false">
+      <view class="movie-list-horizontal">
+        <view 
+          class="movie-card-horizontal" 
+          wx:for="{{hotMovies}}" 
+          wx:key="id"
+          bindtap="goToDetail"
+          data-id="{{item.id}}"
+        >
+          <view class="poster-wrapper">
+            <image class="poster-horizontal" src="{{item.poster}}" mode="aspectFill" lazy-load />
+            <view class="rating-badge">
+              <text class="rating-text">{{item.rating}}</text>
+            </view>
+          </view>
+          <text class="movie-title-horizontal">{{item.title}}</text>
+          <text class="movie-type-horizontal">{{item.type}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <view class="section">
+    <view class="section-header">
+      <text class="section-title">🎬 全部影片</text>
+      <view class="filter-btn" bindtap="showFilter">
+        <view class="filter-icon"></view>
+        <text class="filter-text">筛选</text>
+      </view>
+    </view>
+    
+    <view class="filter-bar" wx:if="{{showFilterBar}}">
+      <scroll-view scroll-x enhanced show-scrollbar="false">
+        <view class="filter-tags">
+          <view 
+            class="filter-tag {{currentFilter === '' ? 'active' : ''}}" 
+            bindtap="setFilter" 
+            data-filter=""
+          >
+            全部
+          </view>
+          <view 
+            class="filter-tag {{currentFilter === '科幻/冒险' ? 'active' : ''}}" 
+            bindtap="setFilter" 
+            data-filter="科幻/冒险"
+          >
+            科幻/冒险
+          </view>
+          <view 
+            class="filter-tag {{currentFilter === '悬疑/历史' ? 'active' : ''}}" 
+            bindtap="setFilter" 
+            data-filter="悬疑/历史"
+          >
+            悬疑/历史
+          </view>
+          <view 
+            class="filter-tag {{currentFilter === '战争/历史' ? 'active' : ''}}" 
+            bindtap="setFilter" 
+            data-filter="战争/历史"
+          >
+            战争/历史
+          </view>
+          <view 
+            class="filter-tag {{currentFilter === '喜剧/剧情' ? 'active' : ''}}" 
+            bindtap="setFilter" 
+            data-filter="喜剧/剧情"
+          >
+            喜剧/剧情
+          </view>
+          <view 
+            class="filter-tag {{currentFilter === '犯罪/剧情' ? 'active' : ''}}" 
+            bindtap="setFilter" 
+            data-filter="犯罪/剧情"
+          >
+            犯罪/剧情
+          </view>
+          <view 
+            class="filter-tag {{currentFilter === '悬疑/犯罪' ? 'active' : ''}}" 
+            bindtap="setFilter" 
+            data-filter="悬疑/犯罪"
+          >
+            悬疑/犯罪
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="movie-list">
+      <view 
+        class="movie-card" 
+        wx:for="{{filteredMovies}}" 
+        wx:key="id"
+        bindtap="goToDetail"
+        data-id="{{item.id}}"
+      >
+        <view class="poster-container">
+          <image class="poster" src="{{item.poster}}" mode="aspectFill" lazy-load />
+          <view class="poster-rating">
+            <view class="star-icon"></view>
+            <text class="rating-num">{{item.rating}}</text>
+          </view>
+        </view>
+        <view class="movie-info">
+          <view class="movie-header">
+            <text class="movie-title">{{item.title}}</text>
+            <view class="favorite-btn-mini" bindtap="toggleFavoriteMini" data-id="{{item.id}}">
+              <view class="fav-icon-mini {{item.isFavorite ? 'active' : ''}}"></view>
+            </view>
+          </view>
+          <text class="movie-type">{{item.type}}</text>
+          <view class="movie-meta">
+            <text class="meta-item">导演：{{item.director}}</text>
+            <text class="meta-item">主演：{{item.cast}}</text>
+          </view>
+          <view class="show-times">
+            <text class="show-time-label">今日场次：</text>
+            <view class="time-tags">
+              <text 
+                class="time-tag" 
+                wx:for="{{item.showTimes.slice(0, 4)}}" 
+                wx:key="*this"
+              >{{item}}</text>
+              <text class="time-tag more" wx:if="{{item.showTimes.length > 4}}">
+                +{{item.showTimes.length - 4}}
+              </text>
+            </view>
+          </view>
+          <view class="movie-footer">
+            <text class="duration">{{item.duration}}</text>
+            <text class="release-date">{{item.releaseDate}}上映</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="bottom-space"></view>
+  <CustomTabBar />
+</view>
