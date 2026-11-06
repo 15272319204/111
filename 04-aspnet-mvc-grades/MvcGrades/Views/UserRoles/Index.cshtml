@@ -1,0 +1,478 @@
+﻿@model List<MvcGrades.Models.UserRolesViewModel>
+@{
+    ViewData["Title"] = "用户角色管理";
+    var currentFilter = ViewData["CurrentFilter"] as string;
+    var pageNumber = ViewData["PageNumber"] as int? ?? 1;
+    var pageSize = ViewData["PageSize"] as int? ?? 5;
+    var totalPages = ViewData["TotalPages"] as int? ?? 1;
+    var totalCount = ViewData["TotalCount"] as int? ?? 0;
+}
+
+<!-- 添加鲜艳的背景和容器样式 -->
+<style>
+    body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+    }
+
+    .main-container {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        padding: 25px;
+        margin-top: 20px;
+        margin-bottom: 40px;
+    }
+
+    .header-card {
+        background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+
+    .search-card {
+        background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%);
+        border: none;
+        border-radius: 12px;
+        margin-bottom: 25px;
+    }
+
+    .table-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    }
+
+    .table thead {
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+        .table thead th {
+            border: none;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+
+    .table tbody tr {
+        transition: all 0.3s ease;
+    }
+
+        .table tbody tr:hover {
+            background-color: rgba(102, 126, 234, 0.05);
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+    .table tbody td {
+        padding: 15px 20px;
+        vertical-align: middle;
+        border-color: #f1f1f1;
+    }
+
+    .role-badge {
+        background: linear-gradient(45deg, #FF9A9E 0%, #FAD0C4 100%);
+        color: #333;
+        font-weight: 600;
+        padding: 5px 15px;
+        border-radius: 20px;
+        margin: 2px;
+        display: inline-block;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 18px;
+        margin-right: 12px;
+    }
+
+    .pagination-container {
+        background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+        border-radius: 10px;
+        padding: 15px;
+        margin-top: 20px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(90deg, #4776E6 0%, #8E54E9 100%);
+        border: none;
+        border-radius: 25px;
+        padding: 8px 20px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(142, 84, 233, 0.4);
+        }
+
+    .btn-outline-danger {
+        border-radius: 20px;
+        padding: 5px 15px;
+        transition: all 0.3s ease;
+    }
+
+        .btn-outline-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
+        }
+
+    .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 15px;
+        text-align: center;
+    }
+
+    .empty-state {
+        padding: 50px 20px;
+        text-align: center;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 10px;
+        margin: 20px;
+    }
+
+        .empty-state i {
+            font-size: 60px;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+</style>
+
+<div class="container">
+    <div class="main-container">
+        <!-- 头部标题区域 -->
+        <div class="header-card">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-2">
+                        <i class="fas fa-users-cog me-3"></i>
+                        用户角色管理系统
+                    </h1>
+                    <p class="mb-0">管理用户权限和角色分配</p>
+                </div>
+                <div class="col-md-4">
+                    <div class="stats-card">
+                        <h3 class="mb-1">@totalCount</h3>
+                        <p class="mb-0">系统用户总数</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 搜索区域 -->
+        <div class="search-card">
+            <div class="card-body">
+                <form asp-action="Index" method="get">
+                    <div class="row g-3 align-items-center">
+                        <div class="col-lg-8">
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text bg-white border-0">
+                                    <i class="fas fa-search text-primary"></i>
+                                </span>
+                                <input type="text" name="searchString" value="@currentFilter"
+                                       class="form-control border-0 ps-0"
+                                       placeholder="请输入用户名或邮箱进行搜索...">
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="d-flex gap-2">
+                                <input type="hidden" name="pageSize" value="@pageSize" />
+                                <button type="submit" class="btn btn-primary flex-grow-1">
+                                    <i class="fas fa-search me-2"></i>搜索用户
+                                </button>
+                                <a asp-action="Index" class="btn btn-outline-primary" asp-route-pageSize="@pageSize">
+                                    <i class="fas fa-redo me-2"></i>重置
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 用户角色表格 -->
+        <div class="table-card">
+            <div class="card-body p-0">
+                @if (Model.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">用户信息</th>
+                                    <th>当前角色</th>
+                                    <th>角色分配</th>
+                                    <th class="pe-4">角色管理</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in Model)
+                                {
+                                    <tr>
+                                        <td class="ps-4">
+                                            <div class="d-flex align-items-center">
+                                                <div class="user-avatar">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-bold">@user.UserName</h6>
+                                                    <small class="text-muted">ID: @user.UserId.Substring(0, 8)...</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                @if (user.Roles.Any())
+                                                {
+                                                    @foreach (var role in user.Roles)
+                                                    {
+                                                        <span class="role-badge">
+                                                            <i class="fas fa-user-tag me-1"></i>@role
+                                                        </span>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted fst-italic">暂无角色分配</span>
+                                                }
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @if (user.AllRoles.Except(user.Roles).Any())
+                                            {
+                                                <form asp-action="AssignRole" method="post" class="d-flex gap-2">
+                                                    <input type="hidden" name="userId" value="@user.UserId" />
+                                                    <select name="role" class="form-select" style="min-width: 150px;">
+                                                        <option value="" selected disabled>选择要分配的角色</option>
+                                                        @foreach (var role in user.AllRoles.Except(user.Roles))
+                                                        {
+                                                            <option value="@role">@role</option>
+                                                        }
+                                                    </select>
+                                                    <button type="submit" class="btn btn-primary">
+                                                        <i class="fas fa-plus-circle me-1"></i>分配
+                                                    </button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-success fw-bold">
+                                                    <i class="fas fa-check-circle me-1"></i>所有角色已分配
+                                                </span>
+                                            }
+                                        </td>
+                                        <td class="pe-4">
+                                            <div class="d-flex flex-wrap gap-2">
+                                                @foreach (var role in user.Roles)
+                                                {
+                                                    <form asp-action="RemoveRole" method="post" class="d-inline">
+                                                        <input type="hidden" name="userId" value="@user.UserId" />
+                                                        <input type="hidden" name="role" value="@role" />
+                                                        <button type="submit" class="btn btn-outline-danger"
+                                                                onclick="return confirm('确定要移除用户 @user.UserName 的 @role 角色吗？')">
+                                                            <i class="fas fa-trash-alt me-1"></i>移除 @role
+                                                        </button>
+                                                    </form>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 完整的分页功能 -->
+                    <div class="pagination-container">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                显示第 @((pageNumber - 1) * pageSize + 1) - @Math.Min(pageNumber * pageSize, totalCount) 条，共 @totalCount 条记录
+                            </div>
+
+                            <div class="d-flex align-items-center gap-3">
+                                <!-- 每页显示条数选择 -->
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">每页显示：</span>
+                                    <form asp-action="Index" method="get" class="d-inline">
+                                        <input type="hidden" name="searchString" value="@currentFilter" />
+                                        <select name="pageSize" onchange="this.form.submit()" class="form-select form-select-sm" style="width: auto;">
+                                            <option value="5" selected="@(pageSize == 5)">5条</option>
+                                            <option value="10" selected="@(pageSize == 10)">10条</option>
+                                            <option value="20" selected="@(pageSize == 20)">20条</option>
+                                            <option value="50" selected="@(pageSize == 50)">50条</option>
+                                        </select>
+                                    </form>
+                                </div>
+
+                                <!-- 分页导航 -->
+                                <nav aria-label="分页导航">
+                                    <ul class="pagination mb-0">
+                                        <!-- 第一页和上一页 -->
+                                        @if (pageNumber > 1)
+                                        {
+                                            <li class="page-item">
+                                                <form asp-action="Index" method="get" class="d-inline">
+                                                    <input type="hidden" name="searchString" value="@currentFilter" />
+                                                    <input type="hidden" name="pageSize" value="@pageSize" />
+                                                    <input type="hidden" name="pageNumber" value="1" />
+                                                    <button type="submit" class="page-link">
+                                                        <i class="fas fa-angle-double-left"></i>
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            <li class="page-item">
+                                                <form asp-action="Index" method="get" class="d-inline">
+                                                    <input type="hidden" name="searchString" value="@currentFilter" />
+                                                    <input type="hidden" name="pageSize" value="@pageSize" />
+                                                    <input type="hidden" name="pageNumber" value="@(pageNumber - 1)" />
+                                                    <button type="submit" class="page-link">
+                                                        <i class="fas fa-angle-left"></i>
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="page-item disabled">
+                                                <span class="page-link"><i class="fas fa-angle-double-left"></i></span>
+                                            </li>
+                                            <li class="page-item disabled">
+                                                <span class="page-link"><i class="fas fa-angle-left"></i></span>
+                                            </li>
+                                        }
+
+                                        <!-- 页码 -->
+                                        @for (int i = 1; i <= totalPages; i++)
+                                        {
+                                            if (i == pageNumber)
+                                            {
+                                                <li class="page-item active">
+                                                    <span class="page-link">@i</span>
+                                                </li>
+                                            }
+                                            else if (i >= pageNumber - 2 && i <= pageNumber + 2)
+                                            {
+                                                <li class="page-item">
+                                                    <form asp-action="Index" method="get" class="d-inline">
+                                                        <input type="hidden" name="searchString" value="@currentFilter" />
+                                                        <input type="hidden" name="pageSize" value="@pageSize" />
+                                                        <input type="hidden" name="pageNumber" value="@i" />
+                                                        <button type="submit" class="page-link">@i</button>
+                                                    </form>
+                                                </li>
+                                            }
+                                            else if (i == 1 || i == totalPages)
+                                            {
+                                                <li class="page-item">
+                                                    <form asp-action="Index" method="get" class="d-inline">
+                                                        <input type="hidden" name="searchString" value="@currentFilter" />
+                                                        <input type="hidden" name="pageSize" value="@pageSize" />
+                                                        <input type="hidden" name="pageNumber" value="@i" />
+                                                        <button type="submit" class="page-link">@i</button>
+                                                    </form>
+                                                </li>
+                                            }
+                                            else if (i == pageNumber - 3 || i == pageNumber + 3)
+                                            {
+                                                <li class="page-item disabled">
+                                                    <span class="page-link">...</span>
+                                                </li>
+                                            }
+                                        }
+
+                                        <!-- 下一页和最后一页 -->
+                                        @if (pageNumber < totalPages)
+                                        {
+                                            <li class="page-item">
+                                                <form asp-action="Index" method="get" class="d-inline">
+                                                    <input type="hidden" name="searchString" value="@currentFilter" />
+                                                    <input type="hidden" name="pageSize" value="@pageSize" />
+                                                    <input type="hidden" name="pageNumber" value="@(pageNumber + 1)" />
+                                                    <button type="submit" class="page-link">
+                                                        <i class="fas fa-angle-right"></i>
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            <li class="page-item">
+                                                <form asp-action="Index" method="get" class="d-inline">
+                                                    <input type="hidden" name="searchString" value="@currentFilter" />
+                                                    <input type="hidden" name="pageSize" value="@pageSize" />
+                                                    <input type="hidden" name="pageNumber" value="@totalPages" />
+                                                    <button type="submit" class="page-link">
+                                                        <i class="fas fa-angle-double-right"></i>
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li class="page-item disabled">
+                                                <span class="page-link"><i class="fas fa-angle-right"></i></span>
+                                            </li>
+                                            <li class="page-item disabled">
+                                                <span class="page-link"><i class="fas fa-angle-double-right"></i></span>
+                                            </li>
+                                        }
+                                    </ul>
+                                </nav>
+
+                                <!-- 跳转到指定页码 -->
+                                <div class="d-flex align-items-center">
+                                    <span class="me-2">跳转到：</span>
+                                    <form asp-action="Index" method="get" class="d-flex gap-1">
+                                        <input type="hidden" name="searchString" value="@currentFilter" />
+                                        <input type="hidden" name="pageSize" value="@pageSize" />
+                                        <input type="number" name="pageNumber" min="1" max="@totalPages"
+                                               value="@pageNumber" class="form-control form-control-sm" style="width: 70px;">
+                                        <button type="submit" class="btn btn-sm btn-primary">Go</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <i class="fas fa-user-slash"></i>
+                        <h4 class="mt-3 mb-2">没有找到匹配的用户</h4>
+                        <p class="text-muted mb-0">请尝试使用不同的搜索条件或清除搜索框重新搜索</p>
+                        <a asp-action="Index" class="btn btn-primary mt-3">
+                            <i class="fas fa-redo me-2"></i>显示所有用户
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- 操作提示 -->
+        <div class="alert alert-info mt-4">
+            <div class="d-flex align-items-center">
+                <i class="fas fa-lightbulb fa-2x me-3"></i>
+                <div>
+                    <h5 class="mb-1">操作提示</h5>
+                    <p class="mb-0">
+                        1. 使用搜索框快速查找用户<br>
+                        2. 通过下拉菜单为用户分配新角色<br>
+                        3. 点击"移除"按钮删除用户的特定角色<br>
+                        4. 使用分页导航浏览所有用户
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

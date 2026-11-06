@@ -1,0 +1,100 @@
+﻿@model MvcGrades.Models.Course
+@{
+    ViewData["Title"] = "课程详情";
+}
+<div class="card shadow-lg border-0">
+    <div class="card-header bg-info text-white py-4">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-info-circle-fill fs-3 me-3"></i>
+            <div>
+                <h4 class="mb-1">课程详情</h4>
+                <p class="mb-0 opacity-75">课程管理 > 课程详情</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-header bg-white border-bottom">
+                        <h5 class="mb-0 text-dark">
+                            <i class="bi bi-book me-2 text-primary"></i>课程基本信息
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-4">
+                            <!-- 课程名称 -->
+                            <div class="col-md-6">
+                                <div class="card border-start border-primary border-4 bg-white">
+                                    <!-- 左侧彩色边框 -->
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-light rounded-circle p-3 me-3">
+                                                <i class="bi bi-book text-primary fs-4"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-muted small mb-1">课程名称</div>
+                                                <div class="h4 mb-0 text-primary fw-bold">@Html.DisplayFor(model => model.Name)</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 学分 -->
+                            <div class="col-md-6">
+                                <div class="card border-0 bg-success bg-opacity-5">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                                                <i class="bi bi-star text-success fs-4"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-muted small mb-1">学分</div>
+                                                <div class="h4 mb-0">
+                                                    <span class="badge bg-success fs-4 px-3 py-2">@Html.DisplayFor(model => model.Credits) 学分</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 课程ID -->
+                            <div class="col-12">
+                                <div class="card border-0 bg-secondary bg-opacity-5">
+                                    <div class="card-body">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-secondary bg-opacity-10 rounded-circle p-3 me-3">
+                                                <i class="bi bi-hash text-secondary fs-4"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-muted small mb-1">课程ID</div>
+                                                <div class="h4 mb-0">
+                                                    <span class="badge bg-secondary fs-5 px-3 py-2">#@Model.Id</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="d-flex justify-content-between">
+                    <div class="d-flex gap-3">
+                        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning px-5 py-3">
+                            <i class="bi bi-pencil-square me-2"></i>编辑课程
+                        </a>
+                        <a asp-action="Index" class="btn btn-outline-primary px-5 py-3">
+                            <i class="bi bi-list-ul me-2"></i>返回列表
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

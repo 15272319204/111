@@ -1,0 +1,385 @@
+﻿@model IEnumerable<MvcGrades.Models.Course>
+@{
+    ViewData["Title"] = "课程管理";
+    string currentYear = ViewData["CurrentYear"] as string ?? "";
+    string currentTerm = ViewData["CurrentTerm"] as string ?? "";
+    string currentFilter = ViewData["CurrentFilter"] as string ?? "";
+    int pageNumber = (int)(ViewData["PageNumber"] ?? 1);
+    int totalPages = (int)(ViewData["TotalPages"] ?? 1);
+    int totalCount = (int)(ViewData["TotalCount"] ?? 0);
+    int pageSize = (int)(ViewData["PageSize"] ?? 5);
+}
+<div class="card shadow-lg border-0">
+    <div class="card-header text-white py-4" style="background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);">
+        <div class="d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-book-half fs-2 me-3"></i>
+                <div>
+                    <h4 class="mb-1">课程管理系统</h4>
+                    <p class="mb-0 opacity-75">专业课程管理与维护</p>
+                </div>
+            </div>
+            <a asp-action="Create" class="btn btn-light btn-lg shadow-sm">
+                <i class="bi bi-plus-circle me-2"></i>新增课程
+            </a>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <!-- 搜索筛选卡片 -->
+        <div class="card border-0 shadow-sm mb-5">
+            <div class="card-body p-4">
+                <form method="get" id="filterForm" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold text-primary">
+                            <i class="bi bi-search me-2"></i>课程搜索
+                        </label>
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-primary text-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" name="searchString" value="@currentFilter"
+                                   class="form-control border-primary"
+                                   placeholder="输入课程名称..." />
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold text-info">
+                            <i class="bi bi-calendar3 me-2"></i>学年筛选
+                        </label>
+                        <select name="year" class="form-select form-select-lg border-info">
+                            <option value="">全部学年</option>
+                            <option value="大一" selected="@(currentYear == "大一" ? "selected" : null)">大一</option>
+                            <option value="大二" selected="@(currentYear == "大二" ? "selected" : null)">大二</option>
+                            <option value="大三" selected="@(currentYear == "大三" ? "selected" : null)">大三</option>
+                            <option value="大四" selected="@(currentYear == "大四" ? "selected" : null)">大四</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold text-info">
+                            <i class="bi bi-calendar-month me-2"></i>学期筛选
+                        </label>
+                        <select name="term" class="form-select form-select-lg border-info">
+                            <option value="">全部学期</option>
+                            <option value="第1学期" selected="@(currentTerm == "第1学期" ? "selected" : null)">第1学期</option>
+                            <option value="第2学期" selected="@(currentTerm == "第2学期" ? "selected" : null)">第2学期</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2">
+                        <label class="form-label fw-bold text-success">
+                            <i class="bi bi-list-columns me-2"></i>每页显示
+                        </label>
+                        <select name="pageSize" class="form-select form-select-lg border-success page-size-selector">
+                            <option value="5" selected="@(pageSize == 5)">5条</option>
+                            <option value="10" selected="@(pageSize == 10)">10条</option>
+                            <option value="20" selected="@(pageSize == 20)">20条</option>
+                            <option value="50" selected="@(pageSize == 50)">50条</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="d-grid gap-2 pt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-funnel me-2"></i>筛选
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-arrow-clockwise me-2"></i>重置
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 统计信息 -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 bg-gradient-info text-dark shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-dark-50 mb-2">课程总数</h6>
+                                <h2 class="mb-0">@totalCount</h2>
+                            </div>
+                            <i class="bi bi-book fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 bg-gradient-success text-dark shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-dark-50 mb-2">当前学年</h6>
+                                <h4 class="mb-0">@(string.IsNullOrEmpty(currentYear) ? "全部学年" : currentYear)</h4>
+                            </div>
+                            <i class="bi bi-calendar3 fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 bg-gradient-warning text-dark shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-dark-50 mb-2">当前学期</h6>
+                                <h4 class="mb-0">@(string.IsNullOrEmpty(currentTerm) ? "全部学期" : currentTerm)</h4>
+                            </div>
+                            <i class="bi bi-calendar-month fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 bg-gradient-primary text-dark shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-dark-50 mb-2">每页显示</h6>
+                                <h4 class="mb-0">@pageSize 条</h4>
+                            </div>
+                            <i class="bi bi-list-columns fs-1 opacity-75"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 课程表格 -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0 text-dark">
+                    <i class="bi bi-table me-2"></i>课程列表
+                    <span class="badge bg-primary ms-2">@totalCount 门课程</span>
+                </h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="bg-light" style="width: 80px;">ID</th>
+                                <th class="bg-light">课程名称</th>
+                                <th class="bg-light" style="width: 100px;">学分</th>
+                                <th class="bg-light">任课教师</th>
+                                <th class="bg-light" style="width: 150px;">学年/学期</th>
+                                <th class="bg-light text-center" style="width: 180px;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-secondary fs-6">#@item.Id</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-book text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">@item.Name</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success fs-6 px-3 py-2">@item.Credits</span>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.Teacher?.Email ?? item.Teacher?.UserName))
+                                        {
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-info bg-opacity-10 rounded-circle p-2 me-3">
+                                                    <i class="bi bi-person text-info"></i>
+                                                </div>
+                                                <div>
+                                                    <div class="fw-bold">@(item.Teacher?.Email ?? item.Teacher?.UserName ?? "")</div>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">未分配</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.Semester))
+                                        {
+                                            <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                                                <i class="bi bi-calendar3 me-1"></i>@item.Semester
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">未设置</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="btn-group btn-group-sm shadow-sm" role="group">
+                                            <a asp-action="Details" asp-route-id="@item.Id"
+                                               class="btn btn-outline-info" title="查看详情">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a asp-action="Edit" asp-route-id="@item.Id"
+                                               class="btn btn-outline-warning" title="编辑课程">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id"
+                                               class="btn btn-outline-danger" title="删除课程">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 分页 -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-4">
+                        <div>
+                            <span class="text-muted">
+                                第 <span class="fw-bold text-primary">@pageNumber</span> 页，共 <span class="fw-bold">@totalPages</span> 页
+                            </span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="text-muted me-2">每页显示：</span>
+                            <select name="pageSize" class="form-select form-select-sm page-size-selector" style="width: auto;">
+                                <option value="5" selected="@(pageSize == 5)">5条</option>
+                                <option value="10" selected="@(pageSize == 10)">10条</option>
+                                <option value="20" selected="@(pageSize == 20)">20条</option>
+                                <option value="50" selected="@(pageSize == 50)">50条</option>
+                            </select>
+                        </div>
+                    </div>
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination mb-0">
+                            <li class="page-item @(pageNumber <= 1 ? "disabled" : "")">
+                                <a class="page-link"
+                                   href="@Url.Action("Index", new { pageNumber = pageNumber - 1, searchString = currentFilter, year = currentYear, term = currentTerm, pageSize = pageSize })"
+                                   aria-label="Previous">
+                                    <span aria-hidden="true">&laquo;</span>
+                                </a>
+                            </li>
+
+                            @for (int i = 1; i <= totalPages; i++)
+                            {
+                                if (i == pageNumber)
+                                {
+                                    <li class="page-item active" aria-current="page">
+                                        <span class="page-link">@i</span>
+                                    </li>
+                                }
+                                else if (i >= pageNumber - 2 && i <= pageNumber + 2)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                           href="@Url.Action("Index", new { pageNumber = i, searchString = currentFilter, year = currentYear, term = currentTerm, pageSize = pageSize })">@i</a>
+                                    </li>
+                                }
+                                else if (i == 1 || i == totalPages)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                           href="@Url.Action("Index", new { pageNumber = i, searchString = currentFilter, year = currentYear, term = currentTerm, pageSize = pageSize })">@i</a>
+                                    </li>
+                                }
+                                else if (i == pageNumber - 3 || i == pageNumber + 3)
+                                {
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                }
+                            }
+
+                            <li class="page-item @(pageNumber >= totalPages ? "disabled" : "")">
+                                <a class="page-link"
+                                   href="@Url.Action("Index", new { pageNumber = pageNumber + 1, searchString = currentFilter, year = currentYear, term = currentTerm, pageSize = pageSize })"
+                                   aria-label="Next">
+                                    <span aria-hidden="true">&raquo;</span>
+                                </a>
+                            </li>
+
+                            <li class="page-item ms-3">
+                                <div class="input-group">
+                                    <input type="number" id="jumpPage" class="form-control"
+                                           min="1" max="@totalPages" value="@pageNumber"
+                                           style="width: 80px;" />
+                                    <button class="btn btn-outline-primary" type="button"
+                                            onclick="jumpToPage()">
+                                        跳转
+                                    </button>
+                                </div>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function jumpToPage() {
+            var pageInput = document.getElementById('jumpPage');
+            var pageNum = parseInt(pageInput.value);
+            var totalPages = @totalPages;
+
+            if (isNaN(pageNum) || pageNum < 1) pageNum = 1;
+            if (pageNum > totalPages) pageNum = totalPages;
+
+            var url = '@Url.Action("Index", new { searchString = currentFilter, year = currentYear, term = currentTerm, pageSize = pageSize })'
+                    + '&pageNumber=' + pageNum;
+            window.location.href = url;
+        }
+        
+        function changePageSize(size) {
+            // 获取表单中的所有筛选参数
+            var form = document.getElementById('filterForm');
+            var searchString = form.querySelector('input[name="searchString"]').value;
+            var year = form.querySelector('select[name="year"]').value;
+            var term = form.querySelector('select[name="term"]').value;
+            
+            // 构建URL
+            var url = '@Url.Action("Index")'
+                    + '?searchString=' + encodeURIComponent(searchString)
+                    + '&year=' + encodeURIComponent(year)
+                    + '&term=' + encodeURIComponent(term)
+                    + '&pageSize=' + size
+                    + '&pageNumber=1';
+            
+            window.location.href = url;
+        }
+
+        // 监听回车键跳转
+        document.getElementById('jumpPage').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                jumpToPage();
+            }
+        });
+        
+        // 为所有pageSize选择器添加事件监听
+        document.addEventListener('DOMContentLoaded', function() {
+            var pageSizeSelectors = document.querySelectorAll('.page-size-selector');
+            
+            pageSizeSelectors.forEach(function(selector) {
+                selector.addEventListener('change', function(e) {
+                    changePageSize(this.value);
+                });
+            });
+        });
+    </script>
+}

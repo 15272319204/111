@@ -1,0 +1,82 @@
+﻿@model MvcGrades.Models.Course
+@{
+    ViewData["Title"] = "删除课程";
+}
+<div class="card shadow-lg border-0">
+    <div class="card-header bg-danger text-white py-4">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-trash3-fill fs-3 me-3"></i>
+            <div>
+                <h4 class="mb-1">删除课程</h4>
+                <p class="mb-0 opacity-75">课程管理 > 删除确认</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-5">
+        <div class="alert alert-danger border-danger border-2" role="alert">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-triangle-fill fs-4 me-3"></i>
+                <div>
+                    <h5 class="alert-heading mb-1">警告：此操作不可撤销！</h5>
+                    <p class="mb-0">确认要永久删除这门课程吗？删除后所有相关成绩记录也将被移除。</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 bg-light shadow-sm mb-5">
+            <div class="card-header bg-white border-bottom">
+                <h5 class="mb-0 text-dark">
+                    <i class="bi bi-info-circle me-2 text-primary"></i>课程信息
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center p-3 bg-white rounded-3 shadow-sm border-start border-4 border-primary">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-book text-primary fs-4"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted small">课程名称</div>
+                                <div class="h5 mb-0 text-dark">@Html.DisplayFor(model => model.Name)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center p-3 bg-white rounded-3 shadow-sm border-start border-4 border-success">
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                                <i class="bi bi-star text-success fs-4"></i>
+                            </div>
+                            <div>
+                                <div class="text-muted small">学分</div>
+                                <div class="h5 mb-0">
+                                    <span class="badge bg-success fs-5 px-3 py-2">@Html.DisplayFor(model => model.Credits) 学分</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <form asp-action="Delete" class="w-100">
+                <input type="hidden" asp-for="Id" />
+                <div class="row g-3">
+                    <div class="col">
+                        <button type="submit" class="btn btn-danger btn-lg w-100 py-3 shadow-sm">
+                            <i class="bi bi-trash3 me-2"></i>确认删除
+                        </button>
+                    </div>
+                    <div class="col">
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-lg w-100 py-3">
+                            <i class="bi bi-arrow-left me-2"></i>取消返回
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

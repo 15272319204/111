@@ -1,0 +1,145 @@
+﻿@model MvcGrades.Models.Course
+@{
+    ViewData["Title"] = "创建课程";
+}
+<div class="card shadow-lg border-0">
+    <div class="card-header bg-success text-white py-4">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-plus-circle-fill fs-3 me-3"></i>
+            <div>
+                <h4 class="mb-1">创建新课程</h4>
+                <p class="mb-0 opacity-75">课程管理 > 创建课程</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <form id="createForm" asp-action="Create" method="post">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger border-danger"></div>
+
+                            <div class="row g-4">
+                                <!-- 课程名称 -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="Name" class="form-control border-2 border-primary"
+                                               placeholder="课程名称" />
+                                        <label asp-for="Name" class="form-label">
+                                            <i class="bi bi-book me-2"></i>课程名称
+                                        </label>
+                                        <span asp-validation-for="Name" class="text-danger small mt-1"></span>
+                                    </div>
+                                </div>
+
+                                <!-- 学分 -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <input asp-for="Credits" class="form-control border-2 border-success"
+                                               placeholder="学分" />
+                                        <label asp-for="Credits" class="form-label">
+                                            <i class="bi bi-star me-2"></i>学分
+                                        </label>
+                                        <span asp-validation-for="Credits" class="text-danger small mt-1"></span>
+                                    </div>
+                                </div>
+
+                                <!-- 任课教师 - 修复：添加 asp-items="ViewBag.TeacherId" -->
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <select asp-for="TeacherId" class="form-select border-2 border-info"
+                                                asp-items="ViewBag.TeacherId" style="height: 58px;">
+                                            <option value="">-- 请选择任课教师 --</option>
+                                        </select>
+                                        <label class="form-label">
+                                            <i class="bi bi-person-badge me-2"></i>任课教师
+                                        </label>
+                                        <span asp-validation-for="TeacherId" class="text-danger small mt-1"></span>
+                                    </div>
+                                </div>
+
+                                <!-- 学年和学期 -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select id="YearSelect" class="form-select border-2 border-warning"
+                                                style="height: 58px;">
+                                            <option value="">-- 请选择学年 --</option>
+                                            <option value="大一">大一</option>
+                                            <option value="大二">大二</option>
+                                            <option value="大三">大三</option>
+                                            <option value="大四">大四</option>
+                                        </select>
+                                        <label class="form-label">
+                                            <i class="bi bi-calendar3 me-2"></i>学年
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select id="TermSelect" class="form-select border-2 border-warning"
+                                                style="height: 58px;">
+                                            <option value="">-- 请选择学期 --</option>
+                                            <option value="第1学期">第1学期</option>
+                                            <option value="第2学期">第2学期</option>
+                                        </select>
+                                        <label class="form-label">
+                                            <i class="bi bi-calendar-month me-2"></i>学期
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- 隐藏字段 -->
+                                <input asp-for="Semester" type="hidden" />
+                            </div>
+
+                            <!-- 操作按钮 -->
+                            <div class="d-grid gap-3 mt-5">
+                                <button type="submit" class="btn btn-success btn-lg py-3 shadow-sm">
+                                    <i class="bi bi-check-circle me-2"></i>创建课程
+                                </button>
+                                <a asp-action="Index" class="btn btn-outline-secondary btn-lg py-3">
+                                    <i class="bi bi-x-circle me-2"></i>取消返回
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+    <script>
+        (function(){
+            var form = document.getElementById('createForm');
+            var year = document.getElementById('YearSelect');
+            var term = document.getElementById('TermSelect');
+            var hidden = document.querySelector('input[name="Semester"]');
+
+            // 若页面有预填 Semester（编辑场景），尝试拆分并设置 selects
+            if (hidden && hidden.value) {
+                var parts = hidden.value.split(' - ');
+                if (parts.length === 2) {
+                    year.value = parts[0];
+                    term.value = parts[1];
+                }
+            }
+
+            form.addEventListener('submit', function(e){
+                var y = year.value;
+                var t = term.value;
+                if (y && t) {
+                    hidden.value = y + ' - ' + t;
+                } else {
+                    // 若任一未选中，清空 hidden，以便后端接收 null/空
+                    hidden.value = '';
+                }
+            }, false);
+        })();
+    </script>
+}

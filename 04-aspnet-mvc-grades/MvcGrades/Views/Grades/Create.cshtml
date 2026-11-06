@@ -1,0 +1,96 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@model MvcGrades.Models.Grade
+@{
+    ViewData["Title"] = "新增成绩";
+}
+@attribute [Authorize(Roles = "Teacher")]
+<div class="card shadow-lg border-0">
+    <div class="card-header bg-success text-white py-4">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-plus-circle-fill fs-3 me-3"></i>
+            <div>
+                <h4 class="mb-1">新增成绩</h4>
+                <p class="mb-0 opacity-75">成绩管理 > 创建成绩</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-body p-5">
+        <div class="alert alert-success" role="alert">
+            <i class="bi bi-info-circle me-2"></i>请准确填写成绩信息，所有字段均为必填项。
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-4">
+                        <form asp-action="Create">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger border-danger"></div>
+
+                            <div class="row g-4">
+                                <!-- 选择学生 - 修复：添加 asp-items="ViewBag.StudentId" -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select asp-for="StudentId" class="form-select border-2 border-primary"
+                                                asp-items="ViewBag.StudentId" style="height: 58px;">
+                                            <option value="">-- 请选择学生 --</option>
+                                        </select>
+                                        <label asp-for="StudentId" class="form-label">
+                                            <i class="bi bi-person-fill me-2 text-primary"></i>选择学生
+                                        </label>
+                                        <span asp-validation-for="StudentId" class="text-danger small mt-1"></span>
+                                    </div>
+                                </div>
+
+                                <!-- 选择课程 - 修复：添加 asp-items="ViewBag.CourseId" -->
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select asp-for="CourseId" class="form-select border-2 border-success"
+                                                asp-items="ViewBag.CourseId" style="height: 58px;">
+                                            <option value="">-- 请选择课程 --</option>
+                                        </select>
+                                        <label asp-for="CourseId" class="form-label">
+                                            <i class="bi bi-journal-text me-2 text-success"></i>选择课程
+                                        </label>
+                                        <span asp-validation-for="CourseId" class="text-danger small mt-1"></span>
+                                    </div>
+                                </div>
+
+                                <!-- 输入成绩 -->
+                                <div class="col-12">
+                                    <div class="form-floating">
+                                        <div class="input-group input-group-lg">
+                                            <input asp-for="Score" class="form-control border-warning shadow-sm"
+                                                   placeholder="请输入成绩分数" />
+                                            <span class="input-group-text bg-warning text-dark">分</span>
+                                        </div>
+                                        <label asp-for="Score" class="form-label">
+                                            <i class="bi bi-award me-2 text-warning"></i>
+                                        </label>
+                                        <span asp-validation-for="Score" class="text-danger small mt-1"></span>
+                                        <div class="form-text">请输入0-100之间的整数成绩</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-3 mt-5">
+                                <button type="submit" class="btn btn-success btn-lg shadow-sm">
+                                    <i class="bi bi-check-circle me-2"></i>创建成绩
+                                </button>
+                                <a asp-action="Index" class="btn btn-outline-secondary btn-lg">
+                                    <i class="bi bi-arrow-left me-2"></i>返回列表
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

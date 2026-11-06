@@ -1,0 +1,67 @@
+﻿@page
+@model MvcGrades.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "注册";
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+<div class="d-flex justify-content-center align-items-center" style="min-height:70vh;">
+    <div class="card shadow-sm" style="width:520px; border-radius:0.75rem;">
+        <div class="card-body p-4">
+            <h4 class="card-title mb-3">
+                <svg class="svg-icon" viewBox="0 0 16 16">
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.03l-2-
+2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0
+0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0
+.196-.12l6.813-6.814z" />
+                    <path d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-
+1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1
+.5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z" />
+                </svg> 注册新账号
+            </h4>
+            <form method="post" class="needs-validation">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-2"></div>
+                <div class="row g-3">
+                    <div class="col-12">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input name="Email" type="email" class="form-control" placeholder="邮箱" />
+                        <span asp-validation-for="Email" class="text-danger">
+                        </span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input name="Password" type="password" class="form-control" placeholder="密码" />
+                        <span asp-validation-for="Password" class="text-danger">
+                        </span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="ConfirmPassword" class="form-label">
+                        </label>
+                        <input name="ConfirmPassword" type="password" class="form-control" placeholder="确认密码" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="FullName" class="form-label"></label>
+                        <input name="FullName" class="form-control" placeholder="全名" />
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="StudentNumber" class="form-label">
+                        </label>
+                        <input name="StudentNumber" class="form-control" placeholder="学号" />
+                    </div>
+                    <div class="col-12 d-flex justify-content-between align-items-center">
+                        <a href="/Account/Login" class="small">已有账号？登录</a>
+                        <button type="submit" class="btn btn-primary">
+                            注册并登录
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

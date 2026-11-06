@@ -1,0 +1,423 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - MvcGrades</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/MvcGrades.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <style>
+        :root {
+            --sidebar-bg: #2c3e50;
+            --sidebar-active: #3498db;
+            --sidebar-hover: #34495e;
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --text-light: #ecf0f1;
+            --text-muted: #bdc3c7;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(180deg, var(--sidebar-bg) 0%, #1a252f 100%);
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1000;
+            transition: all var(--transition-speed) ease;
+        }
+
+            .sidebar .navbar-brand {
+                color: var(--warning-color);
+                font-weight: 700;
+                font-size: 1.5rem;
+                padding: 1rem 0;
+                margin-bottom: 1.5rem;
+                text-align: center;
+                border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+                transition: all 0.3s ease;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+                .sidebar .navbar-brand:hover {
+                    color: #fff;
+                    transform: translateX(5px);
+                }
+
+            .sidebar .nav-link {
+                color: var(--text-light);
+                margin-bottom: 6px;
+                border-radius: 8px;
+                padding: 0.75rem 1rem;
+                transition: all 0.25s ease;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                border-left: 3px solid transparent;
+            }
+
+                .sidebar .nav-link:hover {
+                    background: rgba(255, 255, 255, 0.1);
+                    color: var(--sidebar-active);
+                    transform: translateX(5px);
+                    border-left: 3px solid var(--sidebar-active);
+                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                }
+
+                .sidebar .nav-link.active {
+                    background: linear-gradient(90deg, rgba(52, 152, 219, 0.2) 0%, rgba(52, 152, 219, 0.1) 100%);
+                    color: var(--sidebar-active);
+                    font-weight: 600;
+                    border-left: 3px solid var(--sidebar-active);
+                    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+                }
+
+        /* SVG 图标样式优化 */
+        .svg-icon {
+            width: 1.2em;
+            height: 1.2em;
+            fill: currentColor;
+            vertical-align: middle;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.2));
+        }
+
+        .nav-link:hover .svg-icon {
+            transform: scale(1.1);
+            filter: drop-shadow(0 2px 4px rgba(52, 152, 219, 0.4));
+        }
+
+        .nav-link.active .svg-icon {
+            transform: scale(1.1);
+            filter: drop-shadow(0 2px 4px rgba(52, 152, 219, 0.6));
+        }
+
+        /* 用户信息区域美化 */
+        .user-info-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+            .user-info-container:hover {
+                background: rgba(255, 255, 255, 0.15);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+            }
+
+        .user-icon {
+            width: 2rem;
+            height: 2rem;
+            margin-right: 1rem;
+            fill: var(--text-light);
+            flex-shrink: 0;
+            background: rgba(52, 152, 219, 0.2);
+            padding: 0.5rem;
+            border-radius: 50%;
+            border: 2px solid rgba(52, 152, 219, 0.4);
+        }
+
+        .user-details {
+            flex-grow: 1;
+        }
+
+        .user-name {
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .user-email {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            font-weight: 400;
+        }
+
+        /* 按钮样式美化 */
+        .btn-outline-light, .btn-primary {
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-width: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+        }
+
+            .btn-outline-light:hover {
+                background: rgba(255, 255, 255, 0.2);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #2980b9 100%);
+            border: none;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+            .btn-primary:hover {
+                background: linear-gradient(135deg, #2980b9 0%, var(--primary-color) 100%);
+                transform: translateY(-2px);
+                box-shadow: 0 6px 16px rgba(52, 152, 219, 0.4);
+            }
+
+        /* 主体内容区域 */
+        .main-content {
+            padding: 2rem;
+            background: white;
+            margin: 1rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            min-height: calc(100vh - 2rem);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+         fadeIn {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        /* 导航列表 */
+        .nav-pills {
+            gap: 4px;
+        }
+
+        /* 页脚美化 */
+        .sidebar-footer {
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+            .sidebar-footer:hover {
+                color: var(--text-light);
+            }
+
+         fadeInUp {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        /* 分隔线美化 */
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            margin: 1.5rem 0;
+            border: none;
+        }
+
+        /* 响应式优化 */
+         (max-width: 768px) {
+            .sidebar
+
+        {
+            min-height: auto;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-content {
+            margin: 0.5rem;
+            padding: 1rem;
+            border-radius: 12px;
+        }
+
+        .sidebar .nav-link {
+            padding: 0.6rem 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-0">
+        <div class="row g-0">
+            <!-- 左侧导航 -->
+            <nav class="col-auto col-md-2 sidebar d-flex flex-column p-3">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    晴川成绩查询系统
+                </a>
+
+                @* 已登录用户信息与退出按钮 *@
+                @if (User?.Identity?.IsAuthenticated == true)
+                {
+                    <div class="user-info-container d-flex align-items-center">
+                        <!-- 用户图标 SVG -->
+                        <svg class="user-icon" viewBox="0 0 16 16">
+                            <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z" />
+                        </svg>
+                        <div class="user-details">
+                            <div class="user-name">@User.Identity.Name</div>
+                            @{
+                                var email = User.FindFirst("email")?.Value ??
+                                User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+                            }
+                            @if (!string.IsNullOrEmpty(email) && email != User.Identity.Name)
+                            {
+                                <div class="user-email">@email</div>
+                            }
+                        </div>
+                    </div>
+
+                    <form asp-page="/Account/Logout" method="post" class="mb-3">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-light w-100 d-flex align-items-center justify-content-center">
+                            <svg class="svg-icon" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" />
+                                <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
+                            </svg>
+                            <span>退出登录</span>
+                        </button>
+                    </form>
+                }
+                else
+                {
+                    <div class="mb-4">
+                        <a asp-page="/Account/Login" class="btn btn-primary w-100 mb-2 d-flex align-items-center justify-content-center">
+                            <svg class="svg-icon" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v-2A1.5 1.5 0 0 0 6.5 14h-8A1.5 1.5 0 0 0 5 12.5v-9A1.5 1.5 0 0 0 6.5 2h8A1.5 1.5 0 0 0 16 3.5v9a1.5 1.5 0 0 0-1.5 1.5h-8A1.5 1.5 0 0 0 5 12.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z" />
+                                <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
+                            </svg>
+                            <span>登录系统</span>
+                        </a>
+                        <a asp-page="/Account/Register" class="btn btn-outline-light w-100 d-flex align-items-center justify-content-center">
+                            <svg class="svg-icon" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                            </svg>
+                            <span>注册账号</span>
+                        </a>
+                    </div>
+                }
+
+                <hr class="divider" />
+
+                <ul class="nav nav-pills flex-column mb-auto">
+                    <li>
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
+                           asp-area="" asp-controller="Home" asp-action="Index">
+                            <svg class="svg-icon" viewBox="0 0 16 16">
+                                <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293L8.707 1.5Z" />
+                                <path d="m8 3.293 6 6V13.5a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 13.5V9.293l6-6Z" />
+                            </svg>
+                            <span>系统主页</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Students" ? "active" : "")"
+                           asp-area="" asp-controller="Students" asp-action="Index">
+                            <svg class="svg-icon" viewBox="0 0 16 16">
+                                <path d="M15 14s1 0 1-1-1-4-5-4-5 3-5 4 1 1 1 1h8Zm-7.978-1A.261.261 0 0 1 7 12.996c.001-.264.167-1.03.76-1.72C8.312 10.629 9.282 10 11 10c1.717 0 2.687.63 3.24 1.276.593.69.758 1.457.76 1.72l-.008.002a.274.274 0 0 1-.014.002H7.022ZM11 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm3-2a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM6.936 9.28a5.88 5.88 0 0 0-1.23-.247A7.35 7.35 0 0 0 5 9c-4 0-5 3-5 4 0 .667.333 1 1 1h4.216A2.238 2.238 0 0 1 5 13c0-1.01.377-2.042 1.09-2.904.243-.294.526-.569.846-.816ZM4.92 10A5.493 5.493 0 0 0 4 13H1c0-.26.164-1.03.76-1.724.545-.636 1.492-1.256 3.16-1.275ZM1.5 5.5a3 3 0 1 1 6 0 3 3 0 0 1-6 0Zm3-2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" />
+                            </svg>
+                            <span>学生管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Courses" ? "active" : "")"
+                           asp-area="" asp-controller="Courses" asp-action="Index">
+                            <svg class="svg-icon" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M3 0h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2v-1h1v1a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H3a1 1 0 0 0-1 1v1H1V2a2 2 0 0 1 2-2z" />
+                                <path fill-rule="evenodd" d="M1 5v-.5a.5.5 0 0 1 1 0V5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0V8h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1zm0 3v-.5a.5.5 0 0 1 1 0v.5h.5a.5.5 0 0 1 0 1h-2a.5.5 0 0 1 0-1H1z" />
+                                <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z" />
+                                <path d="M9.5 9.5a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 3.5 9.5v-1A1.5 1.5 0 0 1 5 7h3a1.5 1.5 0 0 1 1.5 1.5v1zM5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1A.5.5 0 0 0 8 8H5z" />
+                            </svg>
+                            <span>课程管理</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Grades" ? "active" : "")"
+                           asp-area="" asp-controller="Grades" asp-action="Index">
+                            <svg class="svg-icon" viewBox="0 0 16 16">
+                                <path d="M4 11H2v3h2v-3zm5-4H7v7h2V7zm5-5v12h-2V2h2zm-2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1h-2zM6 7a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V7zm-5 4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1v-3z" />
+                            </svg>
+                            <span>成绩管理</span>
+                        </a>
+                    </li>
+                    @* 仅管理员可见的"用户角色管理"入口 *@
+                    @if (User?.Identity?.IsAuthenticated == true && User.IsInRole("Admin"))
+                    {
+                        <li>
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "UserRoles" ? "active" : "")"
+                               asp-area="" asp-controller="UserRoles" asp-action="Index">
+                                <svg class="svg-icon" viewBox="0 0 16 16">
+                                    <path d="M6 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0zm4 8c0 1-1 1-1 1H1s-1 0-1-1 1-4 6-4 6 3 6 4zm-1-.004c-.001-.246-.154-.986-.832-1.664C9.516 10.68 8.289 10 6 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10z" />
+                                    <path fill-rule="evenodd" d="M15.5 10a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-3a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 11 10.5v3a1.5 1.5 0 0 0 1.5 1.5h3a1.5 1.5 0 0 0 1.5-1.5v-3a1.5 1.5 0 0 0-1.5-1.5h-3z" />
+                                </svg>
+                                <span>用户角色管理</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+
+                <hr class="divider" />
+
+                <div class="sidebar-footer">
+                    &copy; 2025 晴川成绩查询系统 · zxl
+                </div>
+            </nav>
+
+            <!-- 主体内容 -->
+            <div class="col main-content">
+                <main role="main">
+                    @RenderBody()
+                </main>
+            </div>
+        </div>
+    </div>
+
+    @* 脚本部分保持不变 *@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

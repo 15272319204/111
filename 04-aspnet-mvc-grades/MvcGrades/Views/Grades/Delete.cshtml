@@ -1,0 +1,49 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@model MvcGrades.Models.Grade
+@{
+    ViewData["Title"] = "删除成绩";
+}
+@attribute [Authorize(Roles = "Teacher")]
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-danger text-white py-3">
+        <h4 class="mb-0"><i class="bi bi-trash me-2"></i>删除成绩</h4>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-danger" role="alert">
+            <h5 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i>警告！</h5>
+            <p class="mb-0">此操作无法撤销，确认要删除这条成绩记录吗？</p>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header bg-light">
+                <h6 class="mb-0">成绩详情</h6>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3 text-muted">学生姓名</dt>
+                    <dd class="col-sm-9 fs-5">@Html.DisplayFor(model => model.Student.Name)</dd>
+
+                    <dt class="col-sm-3 text-muted">课程名称</dt>
+                    <dd class="col-sm-9 fs-5">@Html.DisplayFor(model => model.Course.Name)</dd>
+
+                    <dt class="col-sm-3 text-muted">成绩分数</dt>
+                    <dd class="col-sm-9 fs-5">
+                        <span class="badge bg-primary fs-6">@Html.DisplayFor(model => model.Score)</span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-danger px-4">
+                    <i class="bi bi-trash me-2"></i>确认删除
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary px-4">
+                    <i class="bi bi-arrow-left me-2"></i>返回列表
+                </a>
+            </div>
+        </form>
+    </div>
+</div>

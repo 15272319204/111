@@ -1,0 +1,572 @@
+﻿@model IEnumerable<MvcGrades.Models.Grade>
+@{
+    ViewData["Title"] = "成绩管理";
+    var currentFilter = ViewData["CurrentFilter"] as string;
+    var sortOrder = ViewData["SortOrder"] as string;
+    var minScore = ViewData["MinScore"] as int?;
+    var maxScore = ViewData["MaxScore"] as int?;
+    var isTeacher = User.IsInRole("Teacher");
+    var isAdmin = User.IsInRole("Admin");
+
+    // 使用安全的转换
+    var pageNumber = ViewData["PageNumber"] as int? ?? 1;
+    var pageSize = ViewData["PageSize"] as int? ?? 5;
+    var totalPages = ViewData["TotalPages"] as int? ?? 1;
+    var totalCount = ViewData["TotalCount"] as int? ?? 0;
+    var averageScore = ViewData["AverageScore"] as double? ?? 0.0;
+    var selectedAverage = ViewData["SelectedAverage"] as double? ?? 0.0;
+    var selectedCount = ViewData["SelectedCount"] as int? ?? 0;
+    var selectedIdsServer = ViewData["SelectedIds"] as int[] ?? Array.Empty<int>();
+    
+    // 修复：将选中的ID转换为JSON字符串
+    var selectedIdsJson = "[]";
+    try
+    {
+        selectedIdsJson = System.Text.Json.JsonSerializer.Serialize(selectedIdsServer);
+    }
+    catch
+    {
+        selectedIdsJson = "[]";
+    }
+}
+
+<div class="card shadow-sm border-0">
+    <div class="card-header text-white py-3" style="background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="bi bi-journal-text me-2"></i>成绩管理系统</h4>
+            @if (isTeacher || isAdmin)
+            {
+                <a asp-action="Create" class="btn btn-light btn-lg shadow-sm">
+                    <i class="bi bi-plus-circle me-2"></i>新增成绩
+                </a>
+            }
+        </div>
+    </div>
+    
+    <div class="card-body">
+        <!-- 搜索与筛选区域 -->
+        <div class="card mb-4 border-0 shadow-sm">
+            <div class="card-body">
+                <form asp-action="Index" method="get" class="row g-3">
+                    <div class="col-md-5">
+                        <div class="input-group input-group-lg">
+                            <span class="input-group-text bg-primary text-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input type="text" name="searchString" value="@currentFilter"
+                                   class="form-control border-primary" 
+                                   placeholder="搜索学生名、课程名或分数..." />
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="row g-2">
+                            <div class="col">
+                                <input type="number" name="minScore" value="@(minScore?.ToString() ?? "")" 
+                                       class="form-control border-success" placeholder="最低分" />
+                            </div>
+                            <div class="col">
+                                <input type="number" name="maxScore" value="@(maxScore?.ToString() ?? "")" 
+                                       class="form-control border-success" placeholder="最高分" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <select name="pageSize" class="form-select form-select-lg border-info">
+                            <option value="5" selected="@(pageSize == 5)">5条/页</option>
+                            <option value="10" selected="@(pageSize == 10)">10条/页</option>
+                            <option value="20" selected="@(pageSize == 20)">20条/页</option>
+                            <option value="50" selected="@(pageSize == 50)">50条/页</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-4">
+                                <i class="bi bi-funnel me-2"></i>筛选
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4"
+                               asp-route-pageSize="@pageSize" asp-route-sortOrder="@sortOrder"
+                               asp-route-minScore="@minScore" asp-route-maxScore="@maxScore">
+                                <i class="bi bi-arrow-clockwise me-2"></i>重置
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- 统计信息卡片 -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card border-0 bg-gradient-info text-dark shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-dark-50">总记录数</h6>
+                                <h2 class="mb-0">@totalCount</h2>
+                            </div>
+                            <i class="bi bi-list-ol" style="font-size: 2.5rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 bg-gradient-success text-dark shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-dark-50">过滤平均分</h6>
+                                <h2 class="mb-0">@averageScore.ToString("F2")</h2>
+                            </div>
+                            <i class="bi bi-graph-up" style="font-size: 2.5rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 bg-gradient-warning text-dark shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-dark-50">选中平均分</h6>
+                                <h2 class="mb-0">@selectedAverage.ToString("F2")</h2>
+                            </div>
+                            <i class="bi bi-star-fill" style="font-size: 2.5rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card border-0 bg-gradient-primary text-dark shadow-sm">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="card-title text-dark-50">每页显示</h6>
+                                <h2 class="mb-0">@pageSize 条</h2>
+                            </div>
+                            <i class="bi bi-list-columns" style="font-size: 2.5rem;"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 表格区域 -->
+        <form id="averageForm" asp-action="AverageSelected" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" id="selectedIdsCsv" name="selectedIdsCsv" value="" />
+            <input type="hidden" name="searchString" value="@currentFilter" />
+            <input type="hidden" name="sortOrder" value="@sortOrder" />
+            <input type="hidden" name="minScore" value="@(minScore?.ToString() ?? "")" />
+            <input type="hidden" name="maxScore" value="@(maxScore?.ToString() ?? "")" />
+            <input type="hidden" name="pageNumber" value="@pageNumber" />
+            <input type="hidden" name="pageSize" value="@pageSize" />
+            
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">成绩列表</h5>
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="checkAllOnPage" />
+                            <label class="form-check-label" for="checkAllOnPage">全选本页</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:50px;"></th>
+                                    <th>学生姓名</th>
+                                    <th>课程名称</th>
+                                    <th style="min-width: 120px;">
+                                        成绩
+                                        <div class="d-inline-flex align-items-center ms-2">
+                                            <a asp-action="Index" asp-route-sortOrder="score_asc" 
+                                               asp-route-searchString="@currentFilter" asp-route-pageSize="@pageSize" 
+                                               asp-route-pageNumber="1" asp-route-minScore="@(minScore?.ToString() ?? "")" 
+                                               asp-route-maxScore="@(maxScore?.ToString() ?? "")" 
+                                               class="btn btn-sm btn-outline-primary @(sortOrder == "score_asc" ? "active" : "")" 
+                                               title="按成绩升序排列">
+                                                ▲
+                                            </a>
+                                            <a asp-action="Index" asp-route-sortOrder="score_desc" 
+                                               asp-route-searchString="@currentFilter" asp-route-pageSize="@pageSize" 
+                                               asp-route-pageNumber="1" asp-route-minScore="@(minScore?.ToString() ?? "")" 
+                                               asp-route-maxScore="@(maxScore?.ToString() ?? "")" 
+                                               class="btn btn-sm btn-outline-primary @(sortOrder == "score_desc" ? "active" : "") ms-1" 
+                                               title="按成绩降序排列">
+                                                ▼
+                                            </a>
+                                        </div>
+                                    </th>
+                                    <th style="width:150px;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input grade-checkbox" 
+                                                       data-id="@item.Id" id="checkbox-@item.Id" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                                    <i class="bi bi-person text-primary"></i>
+                                                </div>
+                                                <span>@(item.Student?.Name ?? "—")</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                    <i class="bi bi-book text-success"></i>
+                                                </div>
+                                                <span>@(item.Course?.Name ?? "—")</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            @{
+                                                var scoreClass = item.Score >= 90 ? "bg-success" : 
+                                                                item.Score >= 80 ? "bg-info" : 
+                                                                item.Score >= 60 ? "bg-warning" : "bg-danger";
+                                            }
+                                            <span class="badge @scoreClass fs-6 px-3 py-2">@Html.DisplayFor(modelItem => item.Score)</span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a asp-action="Details" asp-route-id="@item.Id" 
+                                                   class="btn btn-outline-info" title="查看详情">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                @if (isTeacher || isAdmin)
+                                                {
+                                                    <a asp-action="Edit" asp-route-id="@item.Id" 
+                                                       class="btn btn-outline-warning" title="编辑">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <a asp-action="Delete" asp-route-id="@item.Id" 
+                                                       class="btn btn-outline-danger" title="删除">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                }
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 批量操作区域 -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <button type="submit" class="btn btn-success px-4">
+                                <i class="bi bi-calculator me-2"></i>计算选中平均分
+                            </button>
+                            <button type="button" id="clearSelection" class="btn btn-outline-secondary px-4 ms-2">
+                                <i class="bi bi-x-circle me-2"></i>清除选择
+                            </button>
+                        </div>
+                        <div class="text-end">
+                            <div class="alert alert-light d-inline-flex align-items-center px-3 py-2">
+                                <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                    <i class="bi bi-check2-circle text-primary"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">已选中 <span id="selected-count-server" class="text-primary">@selectedCount</span> 项</div>
+                                    <div class="text-muted">选中平均分：<strong id="selected-average-server" class="text-success">@selectedAverage.ToString("F2")</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+        
+        <!-- 分页导航 -->
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-4">
+                        <div>
+                            <span class="text-muted">第 @pageNumber 页，共 @totalPages 页，@totalCount 条记录</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="text-muted me-2">每页显示：</span>
+                            <select name="pageSize" onchange="changePageSize(this.value)" class="form-select form-select-sm" style="width: auto;">
+                                <option value="5" selected="@(pageSize == 5)">5条</option>
+                                <option value="10" selected="@(pageSize == 10)">10条</option>
+                                <option value="20" selected="@(pageSize == 20)">20条</option>
+                                <option value="50" selected="@(pageSize == 50)">50条</option>
+                            </select>
+                        </div>
+                    </div>
+                    <nav>
+                        <ul class="pagination mb-0">
+                            @{
+                                var prevDisabled = pageNumber <= 1 ? "disabled" : "";
+                                var nextDisabled = pageNumber >= totalPages ? "disabled" : "";
+                            }
+                            
+                            <!-- 上一页 -->
+                            <li class="page-item @prevDisabled">
+                                @if (pageNumber > 1)
+                                {
+                                    <a class="page-link" 
+                                       href="@Url.Action("Index", new { 
+                                           pageNumber = pageNumber - 1, 
+                                           searchString = currentFilter, 
+                                           sortOrder = sortOrder,
+                                           pageSize = pageSize,
+                                           minScore = minScore,
+                                           maxScore = maxScore
+                                       })"
+                                       aria-label="上一页">
+                                        <i class="bi bi-chevron-left"></i> 上一页
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="page-link" aria-disabled="true">
+                                        <i class="bi bi-chevron-left"></i> 上一页
+                                    </span>
+                                }
+                            </li>
+                            
+                            <!-- 页码 -->
+                            @for (int i = 1; i <= totalPages; i++)
+                            {
+                                if (i == 1 || i == totalPages || (i >= pageNumber - 2 && i <= pageNumber + 2))
+                                {
+                                    <li class="page-item @(i == pageNumber ? "active" : "")">
+                                        <a class="page-link" 
+                                           href="@Url.Action("Index", new { 
+                                               pageNumber = i, 
+                                               searchString = currentFilter, 
+                                               sortOrder = sortOrder,
+                                               pageSize = pageSize,
+                                               minScore = minScore,
+                                               maxScore = maxScore
+                                           })">@i</a>
+                                    </li>
+                                }
+                                else if (i == pageNumber - 3 || i == pageNumber + 3)
+                                {
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                }
+                            }
+                            
+                            <!-- 下一页 -->
+                            <li class="page-item @nextDisabled">
+                                @if (pageNumber < totalPages)
+                                {
+                                    <a class="page-link" 
+                                       href="@Url.Action("Index", new { 
+                                           pageNumber = pageNumber + 1, 
+                                           searchString = currentFilter, 
+                                           sortOrder = sortOrder,
+                                           pageSize = pageSize,
+                                           minScore = minScore,
+                                           maxScore = maxScore
+                                       })"
+                                       aria-label="下一页">
+                                        下一页 <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="page-link" aria-disabled="true">
+                                        下一页 <i class="bi bi-chevron-right"></i>
+                                    </span>
+                                }
+                            </li>
+                            
+                            <!-- 跳转页面 -->
+                            <li class="page-item ms-3">
+                                <div class="input-group">
+                                    <input type="number" id="jumpPage" class="form-control" 
+                                           min="1" max="@totalPages" value="@pageNumber" 
+                                           style="width: 80px;" />
+                                    <button class="btn btn-outline-primary" type="button" 
+                                            onclick="jumpToPage()">跳转</button>
+                                </div>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // 使用 localStorage 跨页保存所选 ID（CSV）
+        const storageKey = 'gradesSelectedIds';
+
+        function getSelectedIds() {
+            const csv = localStorage.getItem(storageKey) || '';
+            if (!csv) return [];
+            return csv.split(',').filter(s => s).map(s => parseInt(s, 10)).filter(n => !isNaN(n));
+        }
+
+        function setSelectedIds(arr) {
+            const csv = Array.from(new Set(arr)).join(',');
+            localStorage.setItem(storageKey, csv);
+            updateSelectedCountDisplay();
+        }
+
+        function updateSelectedCountDisplay() {
+            const ids = getSelectedIds();
+            const el = document.getElementById('selected-count-server');
+            if (el) el.innerText = ids.length;
+        }
+
+        // 页面加载时：把 localStorage 中的选择反映到当前页面复选框
+        function restoreCheckboxes() {
+            const ids = getSelectedIds();
+            document.querySelectorAll('.grade-checkbox').forEach(cb => {
+                const id = parseInt(cb.getAttribute('data-id'), 10);
+                cb.checked = ids.includes(id);
+            });
+            // 更新 "全选" 状态
+            syncCheckAll();
+            updateSelectedCountDisplay();
+        }
+
+        function syncCheckAll() {
+            const all = Array.from(document.querySelectorAll('.grade-checkbox'));
+            const checked = all.filter(cb => cb.checked);
+            const checkAll = document.getElementById('checkAllOnPage');
+            if (!checkAll) return;
+            checkAll.checked = all.length > 0 && checked.length === all.length;
+            checkAll.indeterminate = checked.length > 0 && checked.length < all.length;
+        }
+
+        // 当页内复选框变化，更新 storage
+        document.addEventListener('change', (e) => {
+            if (e.target && e.target.classList && e.target.classList.contains('grade-checkbox')) {
+                const id = parseInt(e.target.getAttribute('data-id'), 10);
+                let ids = getSelectedIds();
+                if (e.target.checked) {
+                    ids.push(id);
+                } else {
+                    ids = ids.filter(x => x !== id);
+                }
+                setSelectedIds(ids);
+                syncCheckAll();
+            }
+            if (e.target && e.target.id === 'checkAllOnPage') {
+                const check = e.target.checked;
+                let ids = getSelectedIds();
+                document.querySelectorAll('.grade-checkbox').forEach(cb => {
+                    cb.checked = check;
+                    const id = parseInt(cb.getAttribute('data-id'), 10);
+                    if (check) {
+                        if (!ids.includes(id)) ids.push(id);
+                    } else {
+                        ids = ids.filter(x => x !== id);
+                    }
+                });
+                setSelectedIds(ids);
+            }
+        });
+
+        // 提交计算选中平均分前，把选中的 id CSV 放入隐藏字段
+        const avgForm = document.getElementById('averageForm');
+        if (avgForm) {
+            avgForm.addEventListener('submit', function (e) {
+                const csv = getSelectedIds().join(',');
+                const hidden = document.getElementById('selectedIdsCsv');
+                if (hidden) hidden.value = csv;
+                // 仍由服务器返回计算结果
+            });
+        }
+
+        // 清除选择
+        const clearBtn = document.getElementById('clearSelection');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function () {
+                localStorage.removeItem(storageKey);
+                restoreCheckboxes();
+                const avgEl = document.getElementById('selected-average-server');
+                if (avgEl) avgEl.innerText = '0.00';
+            });
+        }
+
+        // 在页面加载时恢复 checkbox 状态，并合并服务器返回的已选项
+        document.addEventListener('DOMContentLoaded', function () {
+            try {
+                // 修复：使用已序列化的JSON字符串
+                const serverSelected = @Html.Raw(selectedIdsJson);
+                if (Array.isArray(serverSelected) && serverSelected.length > 0) {
+                    const ids = getSelectedIds();
+                    serverSelected.forEach(id => { if (!ids.includes(id)) ids.push(id); });
+                    setSelectedIds(ids);
+                }
+            } catch (err) {
+                console.log('JSON parse error:', err);
+            }
+            restoreCheckboxes();
+        });
+
+        // 页面跳转函数
+        function jumpToPage() {
+            var pageInput = document.getElementById('jumpPage');
+            var pageNum = parseInt(pageInput.value);
+            var totalPages = @totalPages;
+            
+            if (isNaN(pageNum) || pageNum < 1) pageNum = 1;
+            if (pageNum > totalPages) pageNum = totalPages;
+            
+            // 构建URL
+            var url = '@Url.Action("Index")' + 
+                      '?pageNumber=' + pageNum +
+                      '&searchString=@currentFilter' +
+                      '&sortOrder=@sortOrder' +
+                      '&pageSize=@pageSize' +
+                      '&minScore=@(minScore?.ToString() ?? "")' +
+                      '&maxScore=@(maxScore?.ToString() ?? "")';
+            
+            window.location.href = url;
+        }
+        
+        function changePageSize(size) {
+            var url = '@Url.Action("Index")' + 
+                      '?pageNumber=1' +
+                      '&searchString=@currentFilter' +
+                      '&sortOrder=@sortOrder' +
+                      '&pageSize=' + size +
+                      '&minScore=@(minScore?.ToString() ?? "")' +
+                      '&maxScore=@(maxScore?.ToString() ?? "")';
+            
+            window.location.href = url;
+        }
+        
+        // 监听回车键跳转
+        document.getElementById('jumpPage').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                jumpToPage();
+            }
+        });
+        
+        // 监听页码选择框的change事件
+        document.querySelector('select[name="pageSize"]').addEventListener('change', function(e) {
+            changePageSize(this.value);
+        });
+    </script>
+}

@@ -1,0 +1,417 @@
+﻿﻿@using Microsoft.AspNetCore.Authorization
+@model MvcGrades.Models.HomeDashboardViewModel
+@{
+    ViewData["Title"] = "教学仪表盘";
+}
+@attribute [Authorize(Roles = "Teacher")]
+
+<div class="container-fluid px-4 py-3">
+    <!-- 页面标题 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2 fw-bold text-gradient-primary mb-1">教学仪表盘</h1>
+            <p class="text-muted mb-0">欢迎使用成绩管理系统 - 教师版</p>
+        </div>
+        <div class="d-flex align-items-center">
+            <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                <i class="bi bi-speedometer2 fs-2 text-primary"></i>
+            </div>
+            <div>
+                <p class="mb-0 text-muted">当前角色</p>
+                <p class="fw-bold mb-0">教师</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 统计卡片区域 -->
+    <div class="row g-4 mb-4">
+        <!-- 学生卡片 -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100 overflow-hidden" style="border-top: 4px solid #4e73df;">
+                <div class="card-header bg-white border-0 pb-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title mb-1 text-primary">
+                                <i class="bi bi-people-fill me-2"></i>学生管理
+                            </h5>
+                            <p class="text-muted mb-0">注册学生总数</p>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                            <i class="bi bi-person-circle fs-3 text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="d-flex justify-content-between align-items-end mb-4">
+                        <h2 class="display-5 fw-bold text-primary mb-0">@Model.TotalStudents</h2>
+                        <span class="badge bg-primary bg-opacity-25 text-primary fs-6">位学生</span>
+                    </div>
+                    
+                    <!-- 快速搜索 -->
+                    <form asp-controller="Students" asp-action="Index" method="get" class="mb-3">
+                        <div class="input-group input-group-lg shadow-sm">
+                            <span class="input-group-text bg-primary text-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input name="searchString" class="form-control border-primary" 
+                                   placeholder="输入学生姓名搜索..." />
+                            <button class="btn btn-primary" type="submit">
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- 最近学生 -->
+                    <div class="mb-3">
+                        <h6 class="fw-bold text-muted mb-3">
+                            <i class="bi bi-clock-history me-2"></i>最近学生
+                        </h6>
+                        <div class="list-group list-group-flush">
+                            @if (Model.LatestStudents != null && Model.LatestStudents.Any())
+                            {
+                                @foreach (var s in Model.LatestStudents)
+                                {
+                                    <a class="list-group-item list-group-item-action border-0 py-2 px-3 hover-primary" 
+                                       asp-controller="Students" asp-action="Details" asp-route-id="@s.Id">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-person text-primary"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0">@s.Name</h6>
+                                                <small class="text-muted">点击查看详情</small>
+                                            </div>
+                                            <i class="bi bi-chevron-right text-muted"></i>
+                                        </div>
+                                    </a>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center py-4">
+                                    <i class="bi bi-people fs-1 text-muted opacity-50 mb-2"></i>
+                                    <p class="text-muted mb-0">暂无学生数据</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 pt-0">
+                    <a asp-controller="Students" asp-action="Index" 
+                       class="btn btn-outline-primary w-100 py-2 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-grid-3x3-gap me-2"></i>查看所有学生
+                        <i class="bi bi-arrow-right ms-auto"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 课程卡片 -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100 overflow-hidden" style="border-top: 4px solid #1cc88a;">
+                <div class="card-header bg-white border-0 pb-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title mb-1 text-success">
+                                <i class="bi bi-book-half me-2"></i>课程管理
+                            </h5>
+                            <p class="text-muted mb-0">负责课程总数</p>
+                        </div>
+                        <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                            <i class="bi bi-book fs-3 text-success"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="d-flex justify-content-between align-items-end mb-4">
+                        <h2 class="display-5 fw-bold text-success mb-0">@Model.TotalCourses</h2>
+                        <span class="badge bg-success bg-opacity-25 text-success fs-6">门课程</span>
+                    </div>
+                    
+                    <!-- 快速搜索 -->
+                    <form asp-controller="Courses" asp-action="Index" method="get" class="mb-3">
+                        <div class="input-group input-group-lg shadow-sm">
+                            <span class="input-group-text bg-success text-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input name="searchString" class="form-control border-success" 
+                                   placeholder="输入课程名称搜索..." />
+                            <button class="btn btn-success" type="submit">
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- 最近课程 -->
+                    <div class="mb-3">
+                        <h6 class="fw-bold text-muted mb-3">
+                            <i class="bi bi-clock-history me-2"></i>最近课程
+                        </h6>
+                        <div class="list-group list-group-flush">
+                            @if (Model.LatestCourses != null && Model.LatestCourses.Any())
+                            {
+                                @foreach (var c in Model.LatestCourses)
+                                {
+                                    <a class="list-group-item list-group-item-action border-0 py-2 px-3 hover-success" 
+                                       asp-controller="Courses" asp-action="Details" asp-route-id="@c.Id">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-success bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-journal-text text-success"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-0">@c.Name</h6>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-coin me-1"></i> 学分
+                                                    @if (!string.IsNullOrEmpty(c.Semester))
+                                                    {
+                                                        <span class="ms-2">
+                                                            <i class="bi bi-calendar3 me-1"></i>@c.Semester
+                                                        </span>
+                                                    }
+                                                </small>
+                                            </div>
+                                            <i class="bi bi-chevron-right text-muted"></i>
+                                        </div>
+                                    </a>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center py-4">
+                                    <i class="bi bi-book fs-1 text-muted opacity-50 mb-2"></i>
+                                    <p class="text-muted mb-0">暂无课程数据</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 pt-0">
+                    <a asp-controller="Courses" asp-action="Index" 
+                       class="btn btn-outline-success w-100 py-2 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-grid-3x3-gap me-2"></i>查看所有课程
+                        <i class="bi bi-arrow-right ms-auto"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 成绩卡片 -->
+        <div class="col-xl-4 col-md-6">
+            <div class="card border-0 shadow-sm h-100 overflow-hidden" style="border-top: 4px solid #f6c23e;">
+                <div class="card-header bg-white border-0 pb-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="card-title mb-1 text-warning">
+                                <i class="bi bi-clipboard-data me-2"></i>成绩管理
+                            </h5>
+                            <p class="text-muted mb-0">成绩统计与分析</p>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                            <i class="bi bi-graph-up fs-3 text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    <div class="row g-3 mb-4">
+                        <div class="col-6">
+                            <div class="bg-warning bg-opacity-10 rounded-3 p-3 h-100">
+                                <h6 class="text-muted mb-2">总成绩数</h6>
+                                <h2 class="fw-bold text-warning mb-0">@Model.TotalGrades</h2>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="bg-info bg-opacity-10 rounded-3 p-3 h-100">
+                                <h6 class="text-muted mb-2">平均成绩</h6>
+                                <h2 class="fw-bold text-info mb-0">
+                                    @(Model.AverageScore.HasValue ? Model.AverageScore.Value.ToString("0.0") : "N/A")
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 快速搜索 -->
+                    <form asp-controller="Grades" asp-action="Index" method="get" class="mb-3">
+                        <div class="input-group input-group-lg shadow-sm">
+                            <span class="input-group-text bg-warning text-white">
+                                <i class="bi bi-search"></i>
+                            </span>
+                            <input name="searchString" class="form-control border-warning" 
+                                   placeholder="搜索学生/课程/分数..." />
+                            <button class="btn btn-warning" type="submit">
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <!-- 最近成绩 -->
+                    <div class="mb-3">
+                        <h6 class="fw-bold text-muted mb-3">
+                            <i class="bi bi-clock-history me-2"></i>最近成绩
+                        </h6>
+                        <div class="list-group list-group-flush">
+                            @if (Model.LatestGrades != null && Model.LatestGrades.Any())
+                            {
+                                @foreach (var g in Model.LatestGrades)
+                                {
+                                    <a class="list-group-item list-group-item-action border-0 py-2 px-3 hover-warning" 
+                                       asp-controller="Grades" asp-action="Details" asp-route-id="@g.Id">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-warning bg-opacity-10 rounded-circle p-2 me-3">
+                                                <i class="bi bi-star text-warning"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex justify-content-between align-items-start mb-1">
+                                                    <h6 class="mb-0">@g.Student?.Name</h6>
+                                                    <span class="badge bg-warning text-dark fs-6 px-2 py-1">
+                                                        @g.Score 分
+                                                    </span>
+                                                </div>
+                                                <small class="text-muted">
+                                                    <i class="bi bi-book me-1"></i>@g.Course?.Name
+                                                </small>
+                                            </div>
+                                            <i class="bi bi-chevron-right text-muted"></i>
+                                        </div>
+                                    </a>
+                                }
+                            }
+                            else
+                            {
+                                <div class="text-center py-4">
+                                    <i class="bi bi-clipboard-check fs-1 text-muted opacity-50 mb-2"></i>
+                                    <p class="text-muted mb-0">暂无成绩数据</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0 pt-0">
+                    <a asp-controller="Grades" asp-action="Index" 
+                       class="btn btn-outline-warning w-100 py-2 d-flex align-items-center justify-content-center">
+                        <i class="bi bi-grid-3x3-gap me-2"></i>查看所有成绩
+                        <i class="bi bi-arrow-right ms-auto"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 快捷提示 -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5 class="fw-bold mb-2">
+                        <i class="bi bi-lightbulb text-warning me-2"></i>快捷操作提示
+                    </h5>
+                    <p class="text-muted mb-0">
+                        您可以直接点击面板内的条目进入详情页面，或使用各模块内的搜索框快速跳转到对应列表页面并进行过滤。
+                        所有的操作都将根据您的教师权限显示相关数据。
+                    </p>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <div class="d-flex align-items-center justify-content-md-end">
+                        <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                            <i class="bi bi-lightning-charge-fill text-primary fs-3"></i>
+                        </div>
+                        <div>
+                            <p class="fw-bold mb-0">高效工作</p>
+                            <small class="text-muted">一站式教学管理</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部统计信息 -->
+    <div class="row g-3 mt-4">
+        <div class="col-md-4">
+            <div class="card border-0 bg-gradient-primary text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-2">数据更新时间</h6>
+                            <h5 class="mb-0">@DateTime.Now.ToString("yyyy-MM-dd HH:mm")</h5>
+                        </div>
+                        <i class="bi bi-clock-history fs-1 opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 bg-gradient-success text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-2">系统状态</h6>
+                            <h5 class="mb-0">运行正常</h5>
+                        </div>
+                        <i class="bi bi-check-circle fs-1 opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 bg-gradient-info text-white shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-2">今日访问</h6>
+                            <h5 class="mb-0">教师专用面板</h5>
+                        </div>
+                        <i class="bi bi-shield-check fs-1 opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .text-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .hover-primary:hover {
+        background-color: rgba(78, 115, 223, 0.05);
+        transform: translateX(5px);
+        transition: all 0.3s ease;
+    }
+    
+    .hover-success:hover {
+        background-color: rgba(28, 200, 138, 0.05);
+        transform: translateX(5px);
+        transition: all 0.3s ease;
+    }
+    
+    .hover-warning:hover {
+        background-color: rgba(246, 194, 62, 0.05);
+        transform: translateX(5px);
+        transition: all 0.3s ease;
+    }
+    
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    }
+    
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #1cc88a 0%, #13855c 100%);
+    }
+    
+    .bg-gradient-info {
+        background: linear-gradient(135deg, #36b9cc 0%, #258391 100%);
+    }
+</style>

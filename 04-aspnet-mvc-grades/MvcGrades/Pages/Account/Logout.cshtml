@@ -1,0 +1,9 @@
+﻿@page
+@model MvcGrades.Pages.Account.LogoutModel
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+<!-- 简短占位，实际通过 POST 执行退出并重定向 -->
+<form method="post" class="d-none">
+    @Html.AntiForgeryToken()
+</form>
